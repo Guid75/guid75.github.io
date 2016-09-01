@@ -8738,7 +8738,7 @@ var _user$project$GuessMyAge$onKeyUp = function (tagger) {
 		'keyup',
 		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$keyCode));
 };
-var _user$project$GuessMyAge$initModel = {started: false, age: 0, remainingAttempts: 0, entryAge: '1', youngerThan: _elm_lang$core$Maybe$Nothing, olderThan: _elm_lang$core$Maybe$Nothing, submittedAge: _elm_lang$core$Maybe$Nothing, submitError: false};
+var _user$project$GuessMyAge$initModel = {started: false, age: 0, remainingAttempts: 0, entryAge: '1', youngerThan: _elm_lang$core$Maybe$Nothing, olderThan: _elm_lang$core$Maybe$Nothing, submittedAge: _elm_lang$core$Maybe$Nothing, submitError: false, easyMode: false};
 var _user$project$GuessMyAge$higherLimit = 100;
 var _user$project$GuessMyAge$updateYoungerThan = F2(
 	function (age, model) {
@@ -8790,10 +8790,13 @@ var _user$project$GuessMyAge$submit = function (model) {
 				_user$project$GuessMyAge$focus('#entry')
 			]));
 };
-var _user$project$GuessMyAge$Model = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {started: a, age: b, remainingAttempts: c, entryAge: d, youngerThan: e, olderThan: f, submittedAge: g, submitError: h};
+var _user$project$GuessMyAge$Model = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {started: a, age: b, remainingAttempts: c, entryAge: d, youngerThan: e, olderThan: f, submittedAge: g, submitError: h, easyMode: i};
 	});
+var _user$project$GuessMyAge$CheckEasy = function (a) {
+	return {ctor: 'CheckEasy', _0: a};
+};
 var _user$project$GuessMyAge$EntryKeyUp = function (a) {
 	return {ctor: 'EntryKeyUp', _0: a};
 };
@@ -8851,72 +8854,86 @@ var _user$project$GuessMyAge$update = F2(
 					model,
 					_elm_lang$core$Native_List.fromArray(
 						[]));
-			default:
+			case 'Submit':
 				return _user$project$GuessMyAge$submit(model);
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{easyMode: _p2._0}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
 		}
 	});
 var _user$project$GuessMyAge$LaunchGame = {ctor: 'LaunchGame'};
 var _user$project$GuessMyAge$view = function (model) {
-	var success = _elm_lang$core$Native_Utils.eq(
-		A2(_elm_lang$core$Maybe$withDefault, -1, model.submittedAge),
-		model.age);
+	var submittedAge = A2(_elm_lang$core$Maybe$withDefault, -1, model.submittedAge);
+	var success = _elm_lang$core$Native_Utils.eq(submittedAge, model.age);
 	var finished = success || _elm_lang$core$Native_Utils.eq(model.remainingAttempts, 0);
-	var tip = function (age) {
-		return success ? A2(
+	var easyTip = success ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(model.age),
+		' is my age! Congratulations!') : (finished ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		'You failed to guess my age, I\'m ',
+		A2(
 			_elm_lang$core$Basics_ops['++'],
 			_elm_lang$core$Basics$toString(model.age),
-			' is my age! Congratulations!') : (finished ? A2(
+			' years old! Please, try again!')) : (((!_elm_lang$core$Native_Utils.eq(model.youngerThan, _elm_lang$core$Maybe$Nothing)) && (!_elm_lang$core$Native_Utils.eq(model.olderThan, _elm_lang$core$Maybe$Nothing))) ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		'I\'m older than ',
+		A2(
 			_elm_lang$core$Basics_ops['++'],
-			'You failed to guess my age, I\'m ',
+			_elm_lang$core$Basics$toString(
+				A2(_elm_lang$core$Maybe$withDefault, -1, model.olderThan)),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(model.age),
-				' years old! Please, try again!')) : (((!_elm_lang$core$Native_Utils.eq(model.youngerThan, _elm_lang$core$Maybe$Nothing)) && (!_elm_lang$core$Native_Utils.eq(model.olderThan, _elm_lang$core$Maybe$Nothing))) ? A2(
-			_elm_lang$core$Basics_ops['++'],
-			'I\'m older than ',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
+				' and younger than ',
 				_elm_lang$core$Basics$toString(
-					A2(_elm_lang$core$Maybe$withDefault, -1, model.olderThan)),
+					A2(_elm_lang$core$Maybe$withDefault, -1, model.youngerThan))))) : ((!_elm_lang$core$Native_Utils.eq(model.youngerThan, _elm_lang$core$Maybe$Nothing)) ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		'I\'m younger than ',
+		_elm_lang$core$Basics$toString(
+			A2(_elm_lang$core$Maybe$withDefault, -1, model.youngerThan))) : ((!_elm_lang$core$Native_Utils.eq(model.olderThan, _elm_lang$core$Maybe$Nothing)) ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		'I\'m older than ',
+		_elm_lang$core$Basics$toString(
+			A2(_elm_lang$core$Maybe$withDefault, -1, model.olderThan))) : ''))));
+	var hardTip = success ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(model.age),
+		' is my age! Congratulations!') : (finished ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		'You failed to guess my age, I\'m ',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(model.age),
+			' years old! Please, try again!')) : ((_elm_lang$core$Native_Utils.cmp(submittedAge, model.age) < 0) ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		'I\'m older than ',
+		_elm_lang$core$Basics$toString(submittedAge)) : A2(
+		_elm_lang$core$Basics_ops['++'],
+		'I\'m younger than ',
+		_elm_lang$core$Basics$toString(submittedAge))));
+	var tip = model.easyMode ? easyTip : hardTip;
+	var forgeTip = (!_elm_lang$core$Native_Utils.eq(model.submittedAge, _elm_lang$core$Maybe$Nothing)) ? A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('tip')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
 				A2(
-					_elm_lang$core$Basics_ops['++'],
-					' and younger than ',
-					_elm_lang$core$Basics$toString(
-						A2(_elm_lang$core$Maybe$withDefault, -1, model.youngerThan))))) : ((!_elm_lang$core$Native_Utils.eq(model.youngerThan, _elm_lang$core$Maybe$Nothing)) ? A2(
-			_elm_lang$core$Basics_ops['++'],
-			'I\'m younger than ',
-			_elm_lang$core$Basics$toString(
-				A2(_elm_lang$core$Maybe$withDefault, -1, model.youngerThan))) : ((!_elm_lang$core$Native_Utils.eq(model.olderThan, _elm_lang$core$Maybe$Nothing)) ? A2(
-			_elm_lang$core$Basics_ops['++'],
-			'I\'m older than ',
-			_elm_lang$core$Basics$toString(
-				A2(_elm_lang$core$Maybe$withDefault, -1, model.olderThan))) : ''))));
-	};
-	var forgeTip = function () {
-		var _p3 = model.submittedAge;
-		if (_p3.ctor === 'Nothing') {
-			return _elm_lang$html$Html$text('');
-		} else {
-			return A2(
-				_elm_lang$html$Html$div,
+				_elm_lang$html$Html$strong,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('tip')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$html$Html$strong,
-						_elm_lang$core$Native_List.fromArray(
-							[]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html$text(
-								tip(_p3._0))
-							]))
-					]));
-		}
-	}();
+						_elm_lang$html$Html$text(tip)
+					]))
+			])) : _elm_lang$html$Html$text('');
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -9025,6 +9042,24 @@ var _user$project$GuessMyAge$view = function (model) {
 							[
 								_elm_lang$html$Html$text('New game (with another dude)')
 							]))
+					])),
+				A2(
+				_elm_lang$html$Html$label,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$input,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$type$('checkbox'),
+								_elm_lang$html$Html_Attributes$checked(model.easyMode),
+								_elm_lang$html$Html_Events$onCheck(_user$project$GuessMyAge$CheckEasy)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[])),
+						_elm_lang$html$Html$text('Easy mode (better tips)')
 					]))
 			]));
 };
