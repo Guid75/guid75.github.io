@@ -8990,7 +8990,11 @@ var _user$project$GuessMyAge$view = function (model) {
 								_user$project$GuessMyAge$onKeyUp(_user$project$GuessMyAge$EntryKeyUp),
 								_elm_lang$html$Html_Attributes$disabled(finished),
 								_elm_lang$html$Html_Attributes$type$('number'),
-								_elm_lang$html$Html_Attributes$step('1')
+								_elm_lang$html$Html_Attributes$step('1'),
+								_elm_lang$html$Html_Attributes$min(
+								_elm_lang$core$Basics$toString(_user$project$GuessMyAge$lowerLimit)),
+								_elm_lang$html$Html_Attributes$max(
+								_elm_lang$core$Basics$toString(_user$project$GuessMyAge$higherLimit))
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[])),
