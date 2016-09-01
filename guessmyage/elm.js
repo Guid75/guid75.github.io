@@ -8988,7 +8988,9 @@ var _user$project$GuessMyAge$view = function (model) {
 								_elm_lang$html$Html_Attributes$value(model.entryAge),
 								_elm_lang$html$Html_Events$onInput(_user$project$GuessMyAge$ChangeEntryAge),
 								_user$project$GuessMyAge$onKeyUp(_user$project$GuessMyAge$EntryKeyUp),
-								_elm_lang$html$Html_Attributes$disabled(finished)
+								_elm_lang$html$Html_Attributes$disabled(finished),
+								_elm_lang$html$Html_Attributes$type$('number'),
+								_elm_lang$html$Html_Attributes$step('1')
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[])),
