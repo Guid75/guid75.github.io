@@ -6646,6 +6646,187 @@ var _elm_lang$core$Random$cmdMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Random'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Random$init, onEffects: _elm_lang$core$Random$onEffects, onSelfMsg: _elm_lang$core$Random$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Random$cmdMap};
 
+var _elm_lang$dom$Native_Dom = function() {
+
+function on(node)
+{
+	return function(eventName, decoder, toTask)
+	{
+		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+
+			function performTask(event)
+			{
+				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
+				if (result.ctor === 'Ok')
+				{
+					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
+				}
+			}
+
+			node.addEventListener(eventName, performTask);
+
+			return function()
+			{
+				node.removeEventListener(eventName, performTask);
+			};
+		});
+	};
+}
+
+var rAF = typeof requestAnimationFrame !== 'undefined'
+	? requestAnimationFrame
+	: function(callback) { callback(); };
+
+function withNode(id, doStuff)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		rAF(function()
+		{
+			var node = document.getElementById(id);
+			if (node === null)
+			{
+				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
+				return;
+			}
+			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
+		});
+	});
+}
+
+
+// FOCUS
+
+function focus(id)
+{
+	return withNode(id, function(node) {
+		node.focus();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function blur(id)
+{
+	return withNode(id, function(node) {
+		node.blur();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SCROLLING
+
+function getScrollTop(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollTop;
+	});
+}
+
+function setScrollTop(id, desiredScrollTop)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = desiredScrollTop;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toBottom(id)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = node.scrollHeight;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function getScrollLeft(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollLeft;
+	});
+}
+
+function setScrollLeft(id, desiredScrollLeft)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = desiredScrollLeft;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toRight(id)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = node.scrollWidth;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SIZE
+
+function width(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollWidth;
+			case 'VisibleContent':
+				return node.clientWidth;
+			case 'VisibleContentWithBorders':
+				return node.offsetWidth;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.right - rect.left;
+		}
+	});
+}
+
+function height(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollHeight;
+			case 'VisibleContent':
+				return node.clientHeight;
+			case 'VisibleContentWithBorders':
+				return node.offsetHeight;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.bottom - rect.top;
+		}
+	});
+}
+
+return {
+	onDocument: F3(on(document)),
+	onWindow: F3(on(window)),
+
+	focus: focus,
+	blur: blur,
+
+	getScrollTop: getScrollTop,
+	setScrollTop: F2(setScrollTop),
+	getScrollLeft: getScrollLeft,
+	setScrollLeft: F2(setScrollLeft),
+	toBottom: toBottom,
+	toRight: toRight,
+
+	height: F2(height),
+	width: F2(width)
+};
+
+}();
+
+var _elm_lang$dom$Dom$blur = _elm_lang$dom$Native_Dom.blur;
+var _elm_lang$dom$Dom$focus = _elm_lang$dom$Native_Dom.focus;
+var _elm_lang$dom$Dom$NotFound = function (a) {
+	return {ctor: 'NotFound', _0: a};
+};
+
 //import Native.Json //
 
 var _elm_lang$virtual_dom$Native_VirtualDom = function() {
@@ -7937,7 +8118,7 @@ function applyPatch(domNode, patch)
 	switch (patch.type)
 	{
 		case 'p-redraw':
-			return redraw(domNode, patch.data, patch.eventNode);
+			return applyPatchRedraw(domNode, patch.data, patch.eventNode);
 
 		case 'p-facts':
 			applyFacts(domNode, patch.eventNode, patch.data);
@@ -7986,57 +8167,7 @@ function applyPatch(domNode, patch)
 			return domNode;
 
 		case 'p-reorder':
-			var data = patch.data;
-
-			// end inserts
-			var endInserts = data.endInserts;
-			var end;
-			if (typeof endInserts !== 'undefined')
-			{
-				if (endInserts.length === 1)
-				{
-					var insert = endInserts[0];
-					var entry = insert.entry;
-					var end = entry.tag === 'move'
-						? entry.data
-						: render(entry.vnode, patch.eventNode);
-				}
-				else
-				{
-					end = document.createDocumentFragment();
-					for (var i = 0; i < endInserts.length; i++)
-					{
-						var insert = endInserts[i];
-						var entry = insert.entry;
-						var node = entry.tag === 'move'
-							? entry.data
-							: render(entry.vnode, patch.eventNode);
-						end.appendChild(node);
-					}
-				}
-			}
-
-			// removals
-			domNode = applyPatchesHelp(domNode, data.patches);
-
-			// inserts
-			var inserts = data.inserts;
-			for (var i = 0; i < inserts.length; i++)
-			{
-				var insert = inserts[i];
-				var entry = insert.entry;
-				var node = entry.tag === 'move'
-					? entry.data
-					: render(entry.vnode, patch.eventNode);
-				domNode.insertBefore(node, domNode.childNodes[insert.index]);
-			}
-
-			if (typeof end !== 'undefined')
-			{
-				domNode.appendChild(end);
-			}
-
-			return domNode;
+			return applyPatchReorder(domNode, patch);
 
 		case 'p-custom':
 			var impl = patch.data;
@@ -8048,7 +8179,7 @@ function applyPatch(domNode, patch)
 }
 
 
-function redraw(domNode, vNode, eventNode)
+function applyPatchRedraw(domNode, vNode, eventNode)
 {
 	var parentNode = domNode.parentNode;
 	var newNode = render(vNode, eventNode);
@@ -8063,6 +8194,59 @@ function redraw(domNode, vNode, eventNode)
 		parentNode.replaceChild(newNode, domNode);
 	}
 	return newNode;
+}
+
+
+function applyPatchReorder(domNode, patch)
+{
+	var data = patch.data;
+
+	// remove end inserts
+	var frag = applyPatchReorderEndInsertsHelp(data.endInserts, patch);
+
+	// removals
+	domNode = applyPatchesHelp(domNode, data.patches);
+
+	// inserts
+	var inserts = data.inserts;
+	for (var i = 0; i < inserts.length; i++)
+	{
+		var insert = inserts[i];
+		var entry = insert.entry;
+		var node = entry.tag === 'move'
+			? entry.data
+			: render(entry.vnode, patch.eventNode);
+		domNode.insertBefore(node, domNode.childNodes[insert.index]);
+	}
+
+	// add end inserts
+	if (typeof frag !== 'undefined')
+	{
+		domNode.appendChild(frag);
+	}
+
+	return domNode;
+}
+
+
+function applyPatchReorderEndInsertsHelp(endInserts, patch)
+{
+	if (typeof endInserts === 'undefined')
+	{
+		return;
+	}
+
+	var frag = document.createDocumentFragment();
+	for (var i = 0; i < endInserts.length; i++)
+	{
+		var insert = endInserts[i];
+		var entry = insert.entry;
+		frag.appendChild(entry.tag === 'move'
+			? entry.data
+			: render(entry.vnode, patch.eventNode)
+		);
+	}
+	return frag;
 }
 
 
@@ -8730,7 +8914,7 @@ var _user$project$GuessMyAge$start = F2(
 	function (age, model) {
 		return _elm_lang$core$Native_Utils.update(
 			model,
-			{age: age, remainingAttempts: 10, entryAge: '1', submittedAge: _elm_lang$core$Maybe$Nothing, youngerThan: _elm_lang$core$Maybe$Nothing, olderThan: _elm_lang$core$Maybe$Nothing, submitError: false});
+			{age: age, remainingAttempts: 10, entryAge: '1', lastSubmittedAge: _elm_lang$core$Maybe$Nothing, youngerThan: _elm_lang$core$Maybe$Nothing, olderThan: _elm_lang$core$Maybe$Nothing, submitError: false});
 	});
 var _user$project$GuessMyAge$onKeyUp = function (tagger) {
 	return A2(
@@ -8738,7 +8922,7 @@ var _user$project$GuessMyAge$onKeyUp = function (tagger) {
 		'keyup',
 		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$keyCode));
 };
-var _user$project$GuessMyAge$initModel = {started: false, age: 0, remainingAttempts: 0, entryAge: '1', youngerThan: _elm_lang$core$Maybe$Nothing, olderThan: _elm_lang$core$Maybe$Nothing, submittedAge: _elm_lang$core$Maybe$Nothing, submitError: false, easyMode: false};
+var _user$project$GuessMyAge$initModel = {started: false, age: 0, remainingAttempts: 0, entryAge: '1', youngerThan: _elm_lang$core$Maybe$Nothing, olderThan: _elm_lang$core$Maybe$Nothing, lastSubmittedAge: _elm_lang$core$Maybe$Nothing, submitError: false, easyMode: false};
 var _user$project$GuessMyAge$higherLimit = 100;
 var _user$project$GuessMyAge$updateYoungerThan = F2(
 	function (age, model) {
@@ -8751,48 +8935,14 @@ var _user$project$GuessMyAge$updateOlderThan = F2(
 		var olderThan = A2(_elm_lang$core$Maybe$withDefault, _user$project$GuessMyAge$lowerLimit - 1, model.olderThan);
 		return ((_elm_lang$core$Native_Utils.cmp(age, olderThan) > 0) && (_elm_lang$core$Native_Utils.cmp(age, model.age) < 1)) ? _elm_lang$core$Maybe$Just(age) : model.olderThan;
 	});
-var _user$project$GuessMyAge$focus = _elm_lang$core$Native_Platform.outgoingPort(
-	'focus',
+var _user$project$GuessMyAge$select = _elm_lang$core$Native_Platform.outgoingPort(
+	'select',
 	function (v) {
 		return v;
 	});
-var _user$project$GuessMyAge$submit = function (model) {
-	var entryAgeConverted = function () {
-		var _p0 = _elm_lang$core$String$toInt(model.entryAge);
-		if (_p0.ctor === 'Ok') {
-			var _p1 = _p0._0;
-			return ((_elm_lang$core$Native_Utils.cmp(_p1, 1) > -1) && (_elm_lang$core$Native_Utils.cmp(_p1, 100) < 1)) ? _p1 : -1;
-		} else {
-			return -1;
-		}
-	}();
-	return _elm_lang$core$Native_Utils.eq(entryAgeConverted, -1) ? A2(
-		_elm_lang$core$Platform_Cmd_ops['!'],
-		_elm_lang$core$Native_Utils.update(
-			model,
-			{submitError: true}),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_user$project$GuessMyAge$focus('#entry')
-			])) : A2(
-		_elm_lang$core$Platform_Cmd_ops['!'],
-		_elm_lang$core$Native_Utils.update(
-			model,
-			{
-				submittedAge: _elm_lang$core$Maybe$Just(entryAgeConverted),
-				youngerThan: A2(_user$project$GuessMyAge$updateYoungerThan, entryAgeConverted, model),
-				olderThan: A2(_user$project$GuessMyAge$updateOlderThan, entryAgeConverted, model),
-				submitError: false,
-				remainingAttempts: model.remainingAttempts - 1
-			}),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_user$project$GuessMyAge$focus('#entry')
-			]));
-};
 var _user$project$GuessMyAge$Model = F9(
 	function (a, b, c, d, e, f, g, h, i) {
-		return {started: a, age: b, remainingAttempts: c, entryAge: d, youngerThan: e, olderThan: f, submittedAge: g, submitError: h, easyMode: i};
+		return {started: a, age: b, remainingAttempts: c, entryAge: d, youngerThan: e, olderThan: f, lastSubmittedAge: g, submitError: h, easyMode: i};
 	});
 var _user$project$GuessMyAge$CheckEasy = function (a) {
 	return {ctor: 'CheckEasy', _0: a};
@@ -8816,59 +8966,9 @@ var _user$project$GuessMyAge$init = A2(
 	_user$project$GuessMyAge$initModel,
 	_elm_lang$core$Native_List.fromArray(
 		[_user$project$GuessMyAge$launchGame]));
-var _user$project$GuessMyAge$update = F2(
-	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
-			case 'NoOp':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			case 'LaunchGame':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					_elm_lang$core$Native_List.fromArray(
-						[_user$project$GuessMyAge$launchGame]));
-			case 'StartGame':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					A2(_user$project$GuessMyAge$start, _p2._0, model),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_user$project$GuessMyAge$focus('#entry')
-						]));
-			case 'ChangeEntryAge':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{entryAge: _p2._0}),
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			case 'EntryKeyUp':
-				return _elm_lang$core$Native_Utils.eq(_p2._0, 13) ? _user$project$GuessMyAge$submit(model) : A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			case 'Submit':
-				return _user$project$GuessMyAge$submit(model);
-			default:
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{easyMode: _p2._0}),
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-		}
-	});
 var _user$project$GuessMyAge$LaunchGame = {ctor: 'LaunchGame'};
 var _user$project$GuessMyAge$view = function (model) {
-	var submittedAge = A2(_elm_lang$core$Maybe$withDefault, -1, model.submittedAge);
+	var submittedAge = A2(_elm_lang$core$Maybe$withDefault, -1, model.lastSubmittedAge);
 	var success = _elm_lang$core$Native_Utils.eq(submittedAge, model.age);
 	var finished = success || _elm_lang$core$Native_Utils.eq(model.remainingAttempts, 0);
 	var easyTip = success ? A2(
@@ -8917,7 +9017,7 @@ var _user$project$GuessMyAge$view = function (model) {
 		'I\'m younger than ',
 		_elm_lang$core$Basics$toString(submittedAge))));
 	var tip = model.easyMode ? easyTip : hardTip;
-	var forgeTip = (!_elm_lang$core$Native_Utils.eq(model.submittedAge, _elm_lang$core$Maybe$Nothing)) ? A2(
+	var forgeTip = (!_elm_lang$core$Native_Utils.eq(model.lastSubmittedAge, _elm_lang$core$Maybe$Nothing)) ? A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -9069,11 +9169,107 @@ var _user$project$GuessMyAge$view = function (model) {
 					]))
 			]));
 };
+var _user$project$GuessMyAge$NoOp = {ctor: 'NoOp'};
+var _user$project$GuessMyAge$focusAndSelect = function (id) {
+	return _elm_lang$core$Platform_Cmd$batch(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A3(
+				_elm_lang$core$Task$perform,
+				_elm_lang$core$Basics$always(_user$project$GuessMyAge$NoOp),
+				_elm_lang$core$Basics$always(_user$project$GuessMyAge$NoOp),
+				_elm_lang$dom$Dom$focus(id)),
+				_user$project$GuessMyAge$select(id)
+			]));
+};
+var _user$project$GuessMyAge$submit = function (model) {
+	var entryAgeConverted = function () {
+		var _p0 = _elm_lang$core$String$toInt(model.entryAge);
+		if (_p0.ctor === 'Ok') {
+			var _p1 = _p0._0;
+			return ((_elm_lang$core$Native_Utils.cmp(_p1, 1) > -1) && (_elm_lang$core$Native_Utils.cmp(_p1, 100) < 1)) ? _p1 : -1;
+		} else {
+			return -1;
+		}
+	}();
+	return _elm_lang$core$Native_Utils.eq(entryAgeConverted, -1) ? A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		_elm_lang$core$Native_Utils.update(
+			model,
+			{submitError: true}),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$GuessMyAge$focusAndSelect('entry')
+			])) : A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		_elm_lang$core$Native_Utils.update(
+			model,
+			{
+				lastSubmittedAge: _elm_lang$core$Maybe$Just(entryAgeConverted),
+				youngerThan: A2(_user$project$GuessMyAge$updateYoungerThan, entryAgeConverted, model),
+				olderThan: A2(_user$project$GuessMyAge$updateOlderThan, entryAgeConverted, model),
+				submitError: false,
+				remainingAttempts: model.remainingAttempts - 1
+			}),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$GuessMyAge$focusAndSelect('entry')
+			]));
+};
+var _user$project$GuessMyAge$update = F2(
+	function (msg, model) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
+			case 'NoOp':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			case 'LaunchGame':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					_elm_lang$core$Native_List.fromArray(
+						[_user$project$GuessMyAge$launchGame]));
+			case 'StartGame':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					A2(_user$project$GuessMyAge$start, _p2._0, model),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_user$project$GuessMyAge$focusAndSelect('entry')
+						]));
+			case 'ChangeEntryAge':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{entryAge: _p2._0}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			case 'EntryKeyUp':
+				return _elm_lang$core$Native_Utils.eq(_p2._0, 13) ? _user$project$GuessMyAge$submit(model) : A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			case 'Submit':
+				return _user$project$GuessMyAge$submit(model);
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{easyMode: _p2._0}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+		}
+	});
 var _user$project$GuessMyAge$main = {
 	main: _elm_lang$html$Html_App$program(
 		{init: _user$project$GuessMyAge$init, view: _user$project$GuessMyAge$view, update: _user$project$GuessMyAge$update, subscriptions: _user$project$GuessMyAge$subscriptions})
 };
-var _user$project$GuessMyAge$NoOp = {ctor: 'NoOp'};
 
 var Elm = {};
 Elm['GuessMyAge'] = Elm['GuessMyAge'] || {};
