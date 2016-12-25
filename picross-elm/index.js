@@ -10502,25 +10502,39 @@
 	var _user$project$Picross$Rejected = {ctor: 'Rejected'};
 	var _user$project$Picross$Selected = {ctor: 'Selected'};
 	var _user$project$Picross$updateBoardWithSelection = function (model) {
-		var _p29 = model.selection;
-		if (_p29.ctor === 'Nothing') {
+		var selectCell = F2(
+			function (_p29, board) {
+				var _p30 = _p29;
+				return A4(
+					_eeue56$elm_flat_matrix$Matrix$update,
+					_p30.col,
+					_p30.row,
+					function (cell) {
+						return _user$project$Picross$Cell(_user$project$Picross$Selected);
+					},
+					board);
+			});
+		var toggleCell = F2(
+			function (_p31, board) {
+				var _p32 = _p31;
+				return A4(
+					_eeue56$elm_flat_matrix$Matrix$update,
+					_p32.col,
+					_p32.row,
+					function (cell) {
+						return _user$project$Picross$Cell(
+							_elm_lang$core$Native_Utils.eq(cell.cellType, _user$project$Picross$Selected) ? _user$project$Picross$Empty : _user$project$Picross$Selected);
+					},
+					board);
+			});
+		var _p33 = model.selection;
+		if (_p33.ctor === 'Nothing') {
 			return model.board;
 		} else {
-			var selList = _user$project$Picross$selectionToList(_p29._0);
-			return A3(
-				_elm_lang$core$List$foldr,
-				F2(
-					function (_p30, board) {
-						var _p31 = _p30;
-						return A4(
-							_eeue56$elm_flat_matrix$Matrix$set,
-							_p31.col,
-							_p31.row,
-							_user$project$Picross$Cell(_user$project$Picross$Selected),
-							board);
-					}),
-				model.board,
-				selList);
+			var selList = _user$project$Picross$selectionToList(_p33._0);
+			return _elm_lang$core$Native_Utils.eq(
+				_elm_lang$core$List$length(selList),
+				1) ? A3(_elm_lang$core$List$foldr, toggleCell, model.board, selList) : A3(_elm_lang$core$List$foldr, selectCell, model.board, selList);
 		}
 	};
 	var _user$project$Picross$mouseUpOnGrid = function (model) {
@@ -10531,8 +10545,8 @@
 	};
 	var _user$project$Picross$update = F2(
 		function (msg, model) {
-			var _p32 = msg;
-			switch (_p32.ctor) {
+			var _p34 = msg;
+			switch (_p34.ctor) {
 				case 'MouseDownOnGrid':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10544,12 +10558,12 @@
 						_user$project$Picross$mouseUpOnGrid(model),
 						{ctor: '[]'});
 				case 'MouseMove':
-					var _p33 = _p32._0;
+					var _p35 = _p34._0;
 					return {
 						ctor: '_Tuple2',
 						_0: model,
 						_1: _user$project$Picross$requestBoardMousePos(
-							{ctor: '_Tuple2', _0: _p33.x, _1: _p33.y})
+							{ctor: '_Tuple2', _0: _p35.x, _1: _p35.y})
 					};
 				case 'BoldThicknessChanged':
 					var grid = model.grid;
@@ -10559,7 +10573,7 @@
 							boldThickness: A2(
 								_elm_lang$core$Result$withDefault,
 								2.0,
-								_elm_lang$core$String$toFloat(_p32._0))
+								_elm_lang$core$String$toFloat(_p34._0))
 						});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10575,7 +10589,7 @@
 							thinThickness: A2(
 								_elm_lang$core$Result$withDefault,
 								2.0,
-								_elm_lang$core$String$toFloat(_p32._0))
+								_elm_lang$core$String$toFloat(_p34._0))
 						});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10591,7 +10605,7 @@
 							cellSize: A2(
 								_elm_lang$core$Result$withDefault,
 								2.0,
-								_elm_lang$core$String$toFloat(_p32._0))
+								_elm_lang$core$String$toFloat(_p34._0))
 						});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10602,7 +10616,7 @@
 				case 'BoardMousePos':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_user$project$Picross$boardMousePos, _p32._0, model),
+						A2(_user$project$Picross$boardMousePos, _p34._0, model),
 						{ctor: '[]'});
 				default:
 					return A2(
