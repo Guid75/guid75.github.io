@@ -9950,11 +9950,7 @@
 	var _user$project$Picross$boardMousePos = F2(
 		function (_p0, model) {
 			var _p1 = _p0;
-			var hoveredCell = A3(
-				_user$project$Grid$getCellByXY,
-				_elm_lang$core$Basics$toFloat(_p1._0),
-				_elm_lang$core$Basics$toFloat(_p1._1),
-				model.grid);
+			var hoveredCell = A3(_user$project$Grid$getCellByXY, _p1._0, _p1._1, model.grid);
 			var selection = A2(
 				_elm_lang$core$Maybe$map,
 				function (selection) {
@@ -10197,9 +10193,9 @@
 						return _elm_lang$core$Json_Decode$succeed(
 							{ctor: '_Tuple2', _0: x0, _1: x1});
 					},
-					A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int));
+					A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$float));
 			},
-			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$int)));
+			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$float)));
 	var _user$project$Picross$requestBoardMousePos = _elm_lang$core$Native_Platform.outgoingPort(
 		'requestBoardMousePos',
 		function (v) {
