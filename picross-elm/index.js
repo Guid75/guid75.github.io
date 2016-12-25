@@ -10502,39 +10502,44 @@
 	var _user$project$Picross$Rejected = {ctor: 'Rejected'};
 	var _user$project$Picross$Selected = {ctor: 'Selected'};
 	var _user$project$Picross$updateBoardWithSelection = function (model) {
-		var selectCell = F2(
-			function (_p29, board) {
+		var setCell = F3(
+			function (value, _p29, board) {
 				var _p30 = _p29;
 				return A4(
 					_eeue56$elm_flat_matrix$Matrix$update,
 					_p30.col,
 					_p30.row,
-					function (cell) {
-						return _user$project$Picross$Cell(_user$project$Picross$Selected);
+					function (_p31) {
+						return _user$project$Picross$Cell(value);
 					},
 					board);
 			});
-		var toggleCell = F2(
-			function (_p31, board) {
-				var _p32 = _p31;
-				return A4(
-					_eeue56$elm_flat_matrix$Matrix$update,
-					_p32.col,
-					_p32.row,
-					function (cell) {
-						return _user$project$Picross$Cell(
-							_elm_lang$core$Native_Utils.eq(cell.cellType, _user$project$Picross$Selected) ? _user$project$Picross$Empty : _user$project$Picross$Selected);
-					},
-					board);
-			});
-		var _p33 = model.selection;
-		if (_p33.ctor === 'Nothing') {
+		var toggleValue = function (value) {
+			return _elm_lang$core$Native_Utils.eq(value, _user$project$Picross$Selected) ? _user$project$Picross$Empty : _user$project$Picross$Selected;
+		};
+		var _p32 = model.selection;
+		if (_p32.ctor === 'Nothing') {
 			return model.board;
 		} else {
-			var selList = _user$project$Picross$selectionToList(_p33._0);
-			return _elm_lang$core$Native_Utils.eq(
-				_elm_lang$core$List$length(selList),
-				1) ? A3(_elm_lang$core$List$foldr, toggleCell, model.board, selList) : A3(_elm_lang$core$List$foldr, selectCell, model.board, selList);
+			var _p34 = _p32._0;
+			var setValue = A2(
+				_elm_lang$core$Maybe$withDefault,
+				_user$project$Picross$Selected,
+				A2(
+					_elm_lang$core$Maybe$map,
+					function (_p33) {
+						return toggleValue(
+							function (_) {
+								return _.cellType;
+							}(_p33));
+					},
+					A3(_eeue56$elm_flat_matrix$Matrix$get, _p34.firstCell.col, _p34.firstCell.row, model.board)));
+			var selList = _user$project$Picross$selectionToList(_p34);
+			return A3(
+				_elm_lang$core$List$foldr,
+				setCell(setValue),
+				model.board,
+				selList);
 		}
 	};
 	var _user$project$Picross$mouseUpOnGrid = function (model) {
@@ -10545,8 +10550,8 @@
 	};
 	var _user$project$Picross$update = F2(
 		function (msg, model) {
-			var _p34 = msg;
-			switch (_p34.ctor) {
+			var _p35 = msg;
+			switch (_p35.ctor) {
 				case 'MouseDownOnGrid':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10558,12 +10563,12 @@
 						_user$project$Picross$mouseUpOnGrid(model),
 						{ctor: '[]'});
 				case 'MouseMove':
-					var _p35 = _p34._0;
+					var _p36 = _p35._0;
 					return {
 						ctor: '_Tuple2',
 						_0: model,
 						_1: _user$project$Picross$requestBoardMousePos(
-							{ctor: '_Tuple2', _0: _p35.x, _1: _p35.y})
+							{ctor: '_Tuple2', _0: _p36.x, _1: _p36.y})
 					};
 				case 'BoldThicknessChanged':
 					var grid = model.grid;
@@ -10573,7 +10578,7 @@
 							boldThickness: A2(
 								_elm_lang$core$Result$withDefault,
 								2.0,
-								_elm_lang$core$String$toFloat(_p34._0))
+								_elm_lang$core$String$toFloat(_p35._0))
 						});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10589,7 +10594,7 @@
 							thinThickness: A2(
 								_elm_lang$core$Result$withDefault,
 								2.0,
-								_elm_lang$core$String$toFloat(_p34._0))
+								_elm_lang$core$String$toFloat(_p35._0))
 						});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10605,7 +10610,7 @@
 							cellSize: A2(
 								_elm_lang$core$Result$withDefault,
 								2.0,
-								_elm_lang$core$String$toFloat(_p34._0))
+								_elm_lang$core$String$toFloat(_p35._0))
 						});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10616,7 +10621,7 @@
 				case 'BoardMousePos':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_user$project$Picross$boardMousePos, _p34._0, model),
+						A2(_user$project$Picross$boardMousePos, _p35._0, model),
 						{ctor: '[]'});
 				default:
 					return A2(
