@@ -10486,50 +10486,21 @@
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _user$project$Picross$viewSvg(model),
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Left button to select cells, '),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Right button to reject cells'),
+							_1: {ctor: '[]'}
+						}
+					}),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Bold thickness'),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$input,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$type_('range'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$min('1'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$max('10'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$value(
-														_elm_lang$core$Basics$toString(model.grid.boldThickness)),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onInput(_user$project$Picross$BoldThicknessChanged),
-														_1: {ctor: '[]'}
-													}
-												}
-											}
-										}
-									},
-									{ctor: '[]'}),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Basics$toString(model.grid.boldThickness)),
-									_1: {ctor: '[]'}
-								}
-							}
-						}),
+					_0: _user$project$Picross$viewSvg(model),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -10537,7 +10508,7 @@
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Thin thickness'),
+								_0: _elm_lang$html$Html$text('Bold thickness'),
 								_1: {
 									ctor: '::',
 									_0: A2(
@@ -10554,10 +10525,10 @@
 													_1: {
 														ctor: '::',
 														_0: _elm_lang$html$Html_Attributes$value(
-															_elm_lang$core$Basics$toString(model.grid.thinThickness)),
+															_elm_lang$core$Basics$toString(model.grid.boldThickness)),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onInput(_user$project$Picross$ThinThicknessChanged),
+															_0: _elm_lang$html$Html_Events$onInput(_user$project$Picross$BoldThicknessChanged),
 															_1: {ctor: '[]'}
 														}
 													}
@@ -10568,7 +10539,7 @@
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html$text(
-											_elm_lang$core$Basics$toString(model.grid.thinThickness)),
+											_elm_lang$core$Basics$toString(model.grid.boldThickness)),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -10580,7 +10551,7 @@
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('Cell size'),
+									_0: _elm_lang$html$Html$text('Thin thickness'),
 									_1: {
 										ctor: '::',
 										_0: A2(
@@ -10593,14 +10564,14 @@
 													_0: _elm_lang$html$Html_Attributes$min('1'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$max('40'),
+														_0: _elm_lang$html$Html_Attributes$max('10'),
 														_1: {
 															ctor: '::',
 															_0: _elm_lang$html$Html_Attributes$value(
-																_elm_lang$core$Basics$toString(model.grid.cellSize)),
+																_elm_lang$core$Basics$toString(model.grid.thinThickness)),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Events$onInput(_user$project$Picross$CellSizeChanged),
+																_0: _elm_lang$html$Html_Events$onInput(_user$project$Picross$ThinThicknessChanged),
 																_1: {ctor: '[]'}
 															}
 														}
@@ -10611,12 +10582,56 @@
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html$text(
-												_elm_lang$core$Basics$toString(model.grid.cellSize)),
+												_elm_lang$core$Basics$toString(model.grid.thinThickness)),
 											_1: {ctor: '[]'}
 										}
 									}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Cell size'),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$input,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$type_('range'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$min('1'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$max('40'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$value(
+																	_elm_lang$core$Basics$toString(model.grid.cellSize)),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Events$onInput(_user$project$Picross$CellSizeChanged),
+																	_1: {ctor: '[]'}
+																}
+															}
+														}
+													}
+												},
+												{ctor: '[]'}),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(
+													_elm_lang$core$Basics$toString(model.grid.cellSize)),
+												_1: {ctor: '[]'}
+											}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}
