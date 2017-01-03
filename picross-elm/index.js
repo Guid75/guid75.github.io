@@ -12095,7 +12095,7 @@
 									_1: {ctor: '[]'}
 								});
 						}),
-					tips);
+					_elm_lang$core$List$reverse(tips));
 			});
 		var allTips = _user$project$Level$getVerticalTips(
 			A2(
@@ -12761,7 +12761,7 @@
 				thinThickness: 1.0,
 				strokeColor: _user$project$Picross$gridColor,
 				cellSize: 20.0,
-				topLeft: {x: 200.0, y: 50.0}
+				topLeft: {x: 200.0, y: 100.0}
 			},
 			hoveredCell: _elm_lang$core$Maybe$Nothing,
 			selection: _elm_lang$core$Maybe$Nothing,
