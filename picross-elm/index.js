@@ -11664,33 +11664,39 @@
 				_1: lines
 			};
 		});
-	var _user$project$Grid$drawGrid = function (grid) {
-		return A2(
-			_elm_lang$svg$Svg$g,
-			{
-				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$id('toto'),
-				_1: {ctor: '[]'}
-			},
-			_elm_lang$core$List$concat(
+	var _user$project$Grid$drawGrid = F2(
+		function (grid, op) {
+			return A2(
+				_elm_lang$svg$Svg$g,
 				{
 					ctor: '::',
-					_0: A3(
-						_elm_lang$core$List$foldl,
-						_user$project$Grid$drawVerticalLine(grid),
-						{ctor: '[]'},
-						A2(_elm_lang$core$List$range, 0, grid.colCount)),
+					_0: _elm_lang$svg$Svg_Attributes$id('toto'),
 					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$opacity(
+							_elm_lang$core$Basics$toString(op)),
+						_1: {ctor: '[]'}
+					}
+				},
+				_elm_lang$core$List$concat(
+					{
 						ctor: '::',
 						_0: A3(
 							_elm_lang$core$List$foldl,
-							_user$project$Grid$drawHorizontalLine(grid),
+							_user$project$Grid$drawVerticalLine(grid),
 							{ctor: '[]'},
-							A2(_elm_lang$core$List$range, 0, grid.rowCount)),
-						_1: {ctor: '[]'}
-					}
-				}));
-	};
+							A2(_elm_lang$core$List$range, 0, grid.colCount)),
+						_1: {
+							ctor: '::',
+							_0: A3(
+								_elm_lang$core$List$foldl,
+								_user$project$Grid$drawHorizontalLine(grid),
+								{ctor: '[]'},
+								A2(_elm_lang$core$List$range, 0, grid.rowCount)),
+							_1: {ctor: '[]'}
+						}
+					}));
+		});
 	var _user$project$Grid$getCellCoord = F3(
 		function (col, row, grid) {
 			var rowThickness = A2(_user$project$Grid$getThicknessByIndex, grid, row);
@@ -12589,22 +12595,22 @@
 										_0: _elm_lang$svg$Svg_Attributes$xlinkHref('#toto'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$attributeName('opacity'),
+											_0: _elm_lang$svg$Svg_Attributes$restart('whenNotActive'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$attributeType('CSS'),
+												_0: _elm_lang$svg$Svg_Attributes$attributeName('opacity'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$from('1'),
+													_0: _elm_lang$svg$Svg_Attributes$attributeType('CSS'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$svg$Svg_Attributes$to('0'),
+														_0: _elm_lang$svg$Svg_Attributes$from('1'),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$svg$Svg_Attributes$dur('3s'),
+															_0: _elm_lang$svg$Svg_Attributes$to('0'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$svg$Svg_Attributes$repeatCount('indefinite'),
+																_0: _elm_lang$svg$Svg_Attributes$dur('3s'),
 																_1: {ctor: '[]'}
 															}
 														}
@@ -12624,7 +12630,10 @@
 						ctor: '::',
 						_0: {
 							ctor: '::',
-							_0: A2(_elm_lang$svg$Svg_Lazy$lazy, _user$project$Grid$drawGrid, model.grid),
+							_0: A2(
+								_user$project$Grid$drawGrid,
+								model.grid,
+								_user$project$Picross$isWinning(model) ? 0.0 : 1.0),
 							_1: {ctor: '[]'}
 						},
 						_1: {
