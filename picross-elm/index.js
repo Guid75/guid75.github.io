@@ -17773,13 +17773,13 @@
 				_0: _elm_lang$svg$Svg_Attributes$id('board'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$width('1024'),
+					_0: _elm_lang$svg$Svg_Attributes$width('1200'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$height('500'),
+						_0: _elm_lang$svg$Svg_Attributes$height('600'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 1024 500'),
+							_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 1200 600'),
 							_1: {ctor: '[]'}
 						}
 					}
@@ -18113,7 +18113,7 @@
 				boldThickness: 3.0,
 				thinThickness: 1.0,
 				strokeColor: _user$project$Picross$gridColor,
-				cellSize: 20.0,
+				cellSize: 15.0,
 				topLeft: {x: 200.0, y: 100.0}
 			},
 			hoveredCell: _elm_lang$core$Maybe$Nothing,
