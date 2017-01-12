@@ -17820,11 +17820,15 @@
 									_1: {
 										ctor: '::',
 										_0: function () {
-											var _p42 = _user$project$Picross$isWinning(model);
-											if (_p42 === true) {
-												return {ctor: '[]'};
-											} else {
+											var _p42 = {
+												ctor: '_Tuple2',
+												_0: _user$project$Picross$isWinning(model),
+												_1: model.selection
+											};
+											if (((_p42.ctor === '_Tuple2') && (_p42._0 === false)) && (_p42._1.ctor === 'Nothing')) {
 												return _user$project$Picross$drawHovered(model);
+											} else {
+												return {ctor: '[]'};
 											}
 										}(),
 										_1: {
