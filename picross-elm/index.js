@@ -16562,15 +16562,7 @@
 			};
 			return getRow(0);
 		});
-	var _user$project$Grid$getClosestCell = F2(
-		function (_p0, grid) {
-			var _p1 = _p0;
-			return {
-				col: A2(_user$project$Grid$getClosestRow, _p1.x, grid),
-				row: A2(_user$project$Grid$getClosestRow, _p1.y, grid)
-			};
-		});
-	var _user$project$Grid$getClosedCol = F2(
+	var _user$project$Grid$getClosestCol = F2(
 		function (x, grid) {
 			var getCol = function (col) {
 				getCol:
@@ -16583,14 +16575,22 @@
 						if (_elm_lang$core$Native_Utils.cmp(x, rightCoord.x - rightHalfThickness) < 0) {
 							return col;
 						} else {
-							var _v2 = col + 1;
-							col = _v2;
+							var _v1 = col + 1;
+							col = _v1;
 							continue getCol;
 						}
 					}
 				}
 			};
 			return getCol(0);
+		});
+	var _user$project$Grid$getClosestCell = F2(
+		function (_p0, grid) {
+			var _p1 = _p0;
+			return {
+				col: A2(_user$project$Grid$getClosestCol, _p1.x, grid),
+				row: A2(_user$project$Grid$getClosestRow, _p1.y, grid)
+			};
 		});
 	var _user$project$Grid$Grid = F8(
 		function (a, b, c, d, e, f, g, h) {
