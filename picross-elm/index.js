@@ -17660,9 +17660,7 @@
 	var _user$project$Picross$Won = {ctor: 'Won'};
 	var _user$project$Picross$checkWinning = function (model) {
 		var _p32 = model.state;
-		if (_p32.ctor === 'Won') {
-			return model;
-		} else {
+		if (_p32.ctor === 'Playing') {
 			var isWrongCell = function (cell) {
 				return (cell.value && (!_elm_lang$core$Native_Utils.eq(cell.userChoice, _user$project$Types$Selected))) || ((!cell.value) && _elm_lang$core$Native_Utils.eq(cell.userChoice, _user$project$Types$Selected));
 			};
@@ -17673,6 +17671,8 @@
 				{
 					state: won ? _user$project$Picross$Won : model.state
 				});
+		} else {
+			return model;
 		}
 	};
 	var _user$project$Picross$isWinning = function (model) {
@@ -17728,97 +17728,117 @@
 	var _user$project$Picross$viewSvg = function (model) {
 		var bbox = model.boundingBox;
 		var animAttrs = _mdgriffith$elm_style_animation$Animation$render(model.fadeOutAnim);
-		return A2(
-			_elm_lang$svg$Svg$svg,
-			{
-				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$id('board'),
-				_1: {
+		var _p34 = model.state;
+		if (_p34.ctor === 'Init') {
+			return A2(
+				_elm_lang$svg$Svg$svg,
+				{
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$width('1200'),
+					_0: _elm_lang$svg$Svg_Attributes$id('board'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$height('600'),
+						_0: _elm_lang$svg$Svg_Attributes$width('800'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$viewBox(
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(bbox.x),
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										' ',
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(bbox.y),
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												' ',
-												A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(bbox.width),
-													A2(
-														_elm_lang$core$Basics_ops['++'],
-														' ',
-														_elm_lang$core$Basics$toString(bbox.height)))))))),
+							_0: _elm_lang$svg$Svg_Attributes$height('600'),
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				{ctor: '[]'});
+		} else {
+			return A2(
+				_elm_lang$svg$Svg$svg,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$id('board'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$width('800'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$height('600'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$preserveAspectRatio('xMinYMin meet'),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$svg$Svg_Attributes$viewBox(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(bbox.x),
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											' ',
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(bbox.y),
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													' ',
+													A2(
+														_elm_lang$core$Basics_ops['++'],
+														_elm_lang$core$Basics$toString(bbox.width),
+														A2(
+															_elm_lang$core$Basics_ops['++'],
+															' ',
+															_elm_lang$core$Basics$toString(bbox.height)))))))),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$preserveAspectRatio('xMinYMin meet'),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
-				}
-			},
-			_elm_lang$core$List$concat(
-				{
-					ctor: '::',
-					_0: {
+				},
+				_elm_lang$core$List$concat(
+					{
 						ctor: '::',
-						_0: A2(_user$project$Grid$drawGrid, model.grid, animAttrs),
-						_1: {ctor: '[]'}
-					},
-					_1: {
-						ctor: '::',
-						_0: _user$project$Picross$drawHorizontalLabels(model),
+						_0: {
+							ctor: '::',
+							_0: A2(_user$project$Grid$drawGrid, model.grid, animAttrs),
+							_1: {ctor: '[]'}
+						},
 						_1: {
 							ctor: '::',
-							_0: _user$project$Picross$drawVerticalLabels(model),
+							_0: _user$project$Picross$drawHorizontalLabels(model),
 							_1: {
 								ctor: '::',
-								_0: _user$project$Picross$drawCells(model),
+								_0: _user$project$Picross$drawVerticalLabels(model),
 								_1: {
 									ctor: '::',
-									_0: _user$project$Picross$drawSelection(model),
+									_0: _user$project$Picross$drawCells(model),
 									_1: {
 										ctor: '::',
-										_0: function () {
-											var _p34 = {
-												ctor: '_Tuple2',
-												_0: _user$project$Picross$isWinning(model),
-												_1: model.selection
-											};
-											if (((_p34.ctor === '_Tuple2') && (_p34._0 === false)) && (_p34._1.ctor === 'Nothing')) {
-												return _user$project$Picross$drawHovered(model);
-											} else {
-												return {ctor: '[]'};
-											}
-										}(),
+										_0: _user$project$Picross$drawSelection(model),
 										_1: {
 											ctor: '::',
-											_0: _user$project$Picross$drawWinningLabel(model),
+											_0: function () {
+												var _p35 = {
+													ctor: '_Tuple2',
+													_0: _user$project$Picross$isWinning(model),
+													_1: model.selection
+												};
+												if (((_p35.ctor === '_Tuple2') && (_p35._0 === false)) && (_p35._1.ctor === 'Nothing')) {
+													return _user$project$Picross$drawHovered(model);
+												} else {
+													return {ctor: '[]'};
+												}
+											}(),
 											_1: {
 												ctor: '::',
-												_0: _user$project$Picross$drawGridMouseLayer(model),
-												_1: {ctor: '[]'}
+												_0: _user$project$Picross$drawWinningLabel(model),
+												_1: {
+													ctor: '::',
+													_0: _user$project$Picross$drawGridMouseLayer(model),
+													_1: {ctor: '[]'}
+												}
 											}
 										}
 									}
 								}
 							}
 						}
-					}
-				}));
+					}));
+		}
 	};
 	var _user$project$Picross$view = function (model) {
 		return A2(
@@ -17894,13 +17914,13 @@
 	};
 	var _user$project$Picross$mouseUpOnGrid = F2(
 		function (button, model) {
-			var _p35 = _user$project$Picross$isWinning(model);
-			if (_p35 === true) {
+			var _p36 = _user$project$Picross$isWinning(model);
+			if (_p36 === true) {
 				return model;
 			} else {
 				var value = function () {
-					var _p36 = button;
-					if (_p36 === 1) {
+					var _p37 = button;
+					if (_p37 === 1) {
 						return _user$project$Types$Selected;
 					} else {
 						return _user$project$Types$Rejected;
@@ -17914,9 +17934,9 @@
 		});
 	var _user$project$Picross$winningUpdateWrapper = F3(
 		function (updateFunc, msg, model) {
-			var _p37 = A2(updateFunc, msg, model);
-			var updateModel = _p37._0;
-			var cmd = _p37._1;
+			var _p38 = A2(updateFunc, msg, model);
+			var updateModel = _p38._0;
+			var cmd = _p38._1;
 			var newModel = _user$project$Picross$checkWinning(updateModel);
 			var oldWinning = _user$project$Picross$isWinning(model);
 			return (_user$project$Picross$isWinning(newModel) && (!oldWinning)) ? {
@@ -17950,42 +17970,6 @@
 			} : {ctor: '_Tuple2', _0: newModel, _1: cmd};
 		});
 	var _user$project$Picross$Playing = {ctor: 'Playing'};
-	var _user$project$Picross$init = A2(
-		_elm_lang$core$Platform_Cmd_ops['!'],
-		{
-			board: A3(
-				_eeue56$elm_flat_matrix$Matrix$repeat,
-				17,
-				20,
-				A2(_user$project$Types$Cell, _user$project$Types$Empty, false)),
-			state: _user$project$Picross$Playing,
-			grid: {
-				colCount: 17,
-				rowCount: 20,
-				boldInterval: 5,
-				boldThickness: 3.0,
-				thinThickness: 1.0,
-				strokeColor: _user$project$Picross$gridColor,
-				cellSize: 20.0,
-				topLeft: {x: 0.0, y: 0.0}
-			},
-			hoveredCell: _elm_lang$core$Maybe$Nothing,
-			selection: _elm_lang$core$Maybe$Nothing,
-			levels: _elm_lang$core$Maybe$Nothing,
-			currentLevel: _elm_lang$core$Maybe$Nothing,
-			fadeOutAnim: _mdgriffith$elm_style_animation$Animation$style(
-				{
-					ctor: '::',
-					_0: _mdgriffith$elm_style_animation$Animation$opacity(1.0),
-					_1: {ctor: '[]'}
-				}),
-			boundingBox: {x: 0.0, y: 0.0, width: 0.0, height: 0.0}
-		},
-		{
-			ctor: '::',
-			_0: _user$project$Picross$getLevels,
-			_1: {ctor: '[]'}
-		});
 	var _user$project$Picross$choseLevel = F2(
 		function (levelName, model) {
 			var maybeModel = A2(
@@ -18018,8 +18002,8 @@
 		});
 	var _user$project$Picross$update = F2(
 		function (msg, model) {
-			var _p38 = msg;
-			switch (_p38.ctor) {
+			var _p39 = msg;
+			switch (_p39.ctor) {
 				case 'BoardMouseDown':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -18028,20 +18012,20 @@
 				case 'BoardMouseUp':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_user$project$Picross$mouseUpOnGrid, _p38._0, model),
+						A2(_user$project$Picross$mouseUpOnGrid, _p39._0, model),
 						{ctor: '[]'});
 				case 'GetLevels':
-					if (_p38._0.ctor === 'Ok') {
+					if (_p39._0.ctor === 'Ok') {
 						var newModel = _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								levels: _elm_lang$core$Maybe$Just(_p38._0._0)
+								levels: _elm_lang$core$Maybe$Just(_p39._0._0)
 							});
-						var _p39 = A2(_elm_lang$core$Maybe$andThen, _elm_lang$core$List$head, newModel.levels);
-						if (_p39.ctor === 'Just') {
+						var _p40 = A2(_elm_lang$core$Maybe$andThen, _elm_lang$core$List$head, newModel.levels);
+						if (_p40.ctor === 'Just') {
 							return A2(
 								_elm_lang$core$Platform_Cmd_ops['!'],
-								A2(_user$project$Picross$choseLevel, _p39._0.name, newModel),
+								A2(_user$project$Picross$choseLevel, _p40._0.name, newModel),
 								{
 									ctor: '::',
 									_0: _user$project$Picross$computeBoardSize(
@@ -18061,7 +18045,7 @@
 							{ctor: '[]'});
 					}
 				case 'ChoseLevel':
-					var newModel = A2(_user$project$Picross$choseLevel, _p38._0, model);
+					var newModel = A2(_user$project$Picross$choseLevel, _p39._0, model);
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
@@ -18091,7 +18075,7 @@
 						_elm_lang$core$Native_Utils.update(
 							model,
 							{
-								fadeOutAnim: A2(_mdgriffith$elm_style_animation$Animation$update, _p38._0, model.fadeOutAnim)
+								fadeOutAnim: A2(_mdgriffith$elm_style_animation$Animation$update, _p39._0, model.fadeOutAnim)
 							}),
 						{ctor: '[]'});
 				case 'BoardSizeResult':
@@ -18100,18 +18084,18 @@
 						_elm_lang$core$Native_Utils.update(
 							model,
 							{
-								boundingBox: {x: _p38._0._0, y: _p38._0._1, width: _p38._0._2, height: _p38._0._3}
+								boundingBox: {x: _p39._0._0, y: _p39._0._1, width: _p39._0._2, height: _p39._0._3}
 							}),
 						{ctor: '[]'});
 				case 'SvgMouseMove':
-					var _p40 = _p38._0;
+					var _p41 = _p39._0;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{
 							ctor: '::',
 							_0: _user$project$Picross$requestTransMousePos(
-								{ctor: '_Tuple2', _0: _p40.x, _1: _p40.y}),
+								{ctor: '_Tuple2', _0: _p41.x, _1: _p41.y}),
 							_1: {ctor: '[]'}
 						});
 				case 'SvgMouseLeave':
@@ -18124,7 +18108,7 @@
 				case 'TransMousePosResult':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_user$project$Picross$boardMousePos, _p38._0, model),
+						A2(_user$project$Picross$boardMousePos, _p39._0, model),
 						{ctor: '[]'});
 				default:
 					return A2(
@@ -18132,6 +18116,43 @@
 						model,
 						{ctor: '[]'});
 			}
+		});
+	var _user$project$Picross$Init = {ctor: 'Init'};
+	var _user$project$Picross$init = A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		{
+			board: A3(
+				_eeue56$elm_flat_matrix$Matrix$repeat,
+				17,
+				20,
+				A2(_user$project$Types$Cell, _user$project$Types$Empty, false)),
+			state: _user$project$Picross$Init,
+			grid: {
+				colCount: 17,
+				rowCount: 20,
+				boldInterval: 5,
+				boldThickness: 3.0,
+				thinThickness: 1.0,
+				strokeColor: _user$project$Picross$gridColor,
+				cellSize: 20.0,
+				topLeft: {x: 0.0, y: 0.0}
+			},
+			hoveredCell: _elm_lang$core$Maybe$Nothing,
+			selection: _elm_lang$core$Maybe$Nothing,
+			levels: _elm_lang$core$Maybe$Nothing,
+			currentLevel: _elm_lang$core$Maybe$Nothing,
+			fadeOutAnim: _mdgriffith$elm_style_animation$Animation$style(
+				{
+					ctor: '::',
+					_0: _mdgriffith$elm_style_animation$Animation$opacity(1.0),
+					_1: {ctor: '[]'}
+				}),
+			boundingBox: {x: 0.0, y: 0.0, width: 0.0, height: 0.0}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$Picross$getLevels,
+			_1: {ctor: '[]'}
 		});
 	var _user$project$Picross$main = _elm_lang$html$Html$program(
 		{
