@@ -17149,8 +17149,8 @@
 		return {ctor: 'BoardMouseDown', _0: a};
 	};
 	var _user$project$Msg$NoOp = {ctor: 'NoOp'};
-	var _user$project$Msg$ClickOnTile = function (a) {
-		return {ctor: 'ClickOnTile', _0: a};
+	var _user$project$Msg$MouseUpOnTile = function (a) {
+		return {ctor: 'MouseUpOnTile', _0: a};
 	};
 
 	var _user$project$LevelChooser$getLevelSizeText = function (level) {
@@ -17188,9 +17188,9 @@
 					_0: _elm_lang$svg$Svg_Attributes$cursor('pointer'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Events$onClick(
+						_0: _elm_lang$svg$Svg_Events$onMouseUp(
 							_user$project$Msg$LevelChooserMsg(
-								_user$project$Msg$ClickOnTile(level.name))),
+								_user$project$Msg$MouseUpOnTile(level.name))),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -19194,16 +19194,27 @@
 						_user$project$Picross$mouseUp(model),
 						{ctor: '[]'});
 				case 'LevelChooserMsg':
-					var _p81 = _p74._0;
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_user$project$Picross$choseLevel, _p81._0, model),
-						{
-							ctor: '::',
-							_0: _user$project$Picross$computeBoardSize(
-								{ctor: '_Tuple0'}),
-							_1: {ctor: '[]'}
-						});
+					var _p81 = model.state;
+					if (_p81.ctor === 'ChoosingLevel') {
+						var _p82 = _p74._0;
+						return _elm_lang$core$Native_Utils.eq(model.currentSvgMousePos, model.downSvgMousePos) ? A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							A2(_user$project$Picross$choseLevel, _p82._0, model),
+							{
+								ctor: '::',
+								_0: _user$project$Picross$computeBoardSize(
+									{ctor: '_Tuple0'}),
+								_1: {ctor: '[]'}
+							}) : A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							{ctor: '[]'});
+					} else {
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							{ctor: '[]'});
+					}
 				case 'GoToLevelChooser':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
