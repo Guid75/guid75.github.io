@@ -53,10 +53,7 @@
 	var myapp = Elm.Picross.embed(document.getElementById('main'));
 
 	myapp.ports.computeBoardSize.subscribe(computeBoardSize);
-	myapp.ports.requestTransMousePos.subscribe(requestTransMousePos);
-	myapp.ports.requestTransMousePos2.subscribe(requestTransMousePos2);
-
-	var pt;
+	myapp.ports.requestSvgMousePos.subscribe(requestSvgMousePos);
 
 	function computeBoardSize() {
 	    var board = document.getElementById('board');
@@ -70,25 +67,15 @@
 	    }, 10);
 	}
 
-	function requestTransMousePos(pos) {
-	    var svg = document.getElementById('board');
-	    pt = svg.createSVGPoint();
-	    pt.x = pos[0];
-	    pt.y = pos[1];
-	    // console.log('requestTransMousePos', pos[0], pos[1]);
-	    var p = pt.matrixTransform(svg.getScreenCTM().inverse());
-	    myapp.ports.transMousePosResult.send([p.x, p.y]);
-	}
 
-	function requestTransMousePos2(pos) {
+	function requestSvgMousePos(pos) {
 	    var svg = document.getElementById('board');
 	    var rect = svg.getBoundingClientRect();
-	    pt = svg.createSVGPoint();
-	    pt.x = pos[0]; //- rect.left;
-	    pt.y = pos[1]; // - rect.top;
-	    // console.log('requestTransMousePos2', pos[0] - rect.left, pos[1] - rect.top);
+	    var pt = svg.createSVGPoint();
+	    pt.x = pos[0];
+	    pt.y = pos[1];
 	    var p = pt.matrixTransform(svg.getScreenCTM().inverse());
-	    myapp.ports.transMousePosResult2.send([p.x, p.y]);
+	    myapp.ports.svgMousePosResult.send([p.x, p.y]);
 	}
 
 
@@ -17121,16 +17108,10 @@
 		return {ctor: 'LevelChooserMsg', _0: a};
 	};
 	var _user$project$Msg$EndOfFade = {ctor: 'EndOfFade'};
-	var _user$project$Msg$TransMousePosResult2 = function (a) {
-		return {ctor: 'TransMousePosResult2', _0: a};
-	};
-	var _user$project$Msg$TransMousePosResult = function (a) {
-		return {ctor: 'TransMousePosResult', _0: a};
+	var _user$project$Msg$SvgMousePosResult = function (a) {
+		return {ctor: 'SvgMousePosResult', _0: a};
 	};
 	var _user$project$Msg$SvgMouseLeave = {ctor: 'SvgMouseLeave'};
-	var _user$project$Msg$SvgMouseMove = function (a) {
-		return {ctor: 'SvgMouseMove', _0: a};
-	};
 	var _user$project$Msg$Animate = function (a) {
 		return {ctor: 'Animate', _0: a};
 	};
@@ -17153,6 +17134,11 @@
 		return {ctor: 'MouseUpOnTile', _0: a};
 	};
 
+	var _user$project$LevelChooser$mouseDown = function (model) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{oldHorizontalOffset: model.horizontalOffset});
+	};
 	var _user$project$LevelChooser$getLevelSizeText = function (level) {
 		var firstCol = A2(
 			_elm_lang$core$Maybe$withDefault,
@@ -17167,6 +17153,9 @@
 				_elm_lang$core$Basics_ops['++'],
 				'x',
 				_elm_lang$core$Basics$toString(rowsCount)));
+	};
+	var _user$project$LevelChooser$getHorizontalTilesSize = function (model) {
+		return 1 + (((_elm_lang$core$List$length(model.levels) - 1) / model.verticalTilesCount) | 0);
 	};
 	var _user$project$LevelChooser$computeTileSize = function (model) {
 		var vtc = _elm_lang$core$Basics$toFloat(model.verticalTilesCount);
@@ -17285,80 +17274,90 @@
 					}
 				});
 		});
-	var _user$project$LevelChooser$drawTiles = F2(
-		function (model, levels) {
-			return A2(
-				_elm_lang$svg$Svg$g,
-				{
-					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$transform(
+	var _user$project$LevelChooser$drawTiles = function (model) {
+		return A2(
+			_elm_lang$svg$Svg$g,
+			{
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$transform(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'translate(',
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							'translate(',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(model.horizontalOffset),
-								')'))),
-					_1: {ctor: '[]'}
-				},
-				A2(
-					_elm_lang$core$List$indexedMap,
-					_user$project$LevelChooser$drawTile(model),
-					levels));
-		});
-	var _user$project$LevelChooser$view = F2(
-		function (model, levels) {
-			return _elm_lang$core$List$concat(
-				{
+							_elm_lang$core$Basics$toString(model.horizontalOffset),
+							')'))),
+				_1: {ctor: '[]'}
+			},
+			A2(
+				_elm_lang$core$List$indexedMap,
+				_user$project$LevelChooser$drawTile(model),
+				model.levels));
+	};
+	var _user$project$LevelChooser$view = function (model) {
+		return _elm_lang$core$List$concat(
+			{
+				ctor: '::',
+				_0: {
 					ctor: '::',
-					_0: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$svg$Svg$rect,
-							{
+					_0: A2(
+						_elm_lang$svg$Svg$rect,
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$x('0.0'),
+							_1: {
 								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$x('0.0'),
+								_0: _elm_lang$svg$Svg_Attributes$y('0.0'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$y('0.0'),
+									_0: _elm_lang$svg$Svg_Attributes$width(
+										_elm_lang$core$Basics$toString(model.width)),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$width(
-											_elm_lang$core$Basics$toString(model.width)),
+										_0: _elm_lang$svg$Svg_Attributes$height(
+											_elm_lang$core$Basics$toString(model.height)),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$height(
-												_elm_lang$core$Basics$toString(model.height)),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$fill('lightblue'),
-												_1: {ctor: '[]'}
-											}
+											_0: _elm_lang$svg$Svg_Attributes$fill('lightblue'),
+											_1: {ctor: '[]'}
 										}
 									}
 								}
-							},
-							{ctor: '[]'}),
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '::',
+						_0: _user$project$LevelChooser$drawTiles(model),
 						_1: {ctor: '[]'}
 					},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '::',
-							_0: A2(_user$project$LevelChooser$drawTiles, model, levels),
-							_1: {ctor: '[]'}
-						},
-						_1: {ctor: '[]'}
-					}
-				});
+					_1: {ctor: '[]'}
+				}
+			});
+	};
+	var _user$project$LevelChooser$mouseMoveWithLeftButton = F3(
+		function (downPos, currentPos, model) {
+			var padding = _user$project$LevelChooser$computePaddingSize(model);
+			var boardWidth = (_elm_lang$core$Basics$toFloat(
+				_user$project$LevelChooser$getHorizontalTilesSize(model)) * (_user$project$LevelChooser$computeTileSize(model) + padding)) + padding;
+			var diff = currentPos.x - downPos.x;
+			var projectedOffset = model.oldHorizontalOffset + diff;
+			var newOffset = (_elm_lang$core$Native_Utils.cmp(projectedOffset, 0) > 0) ? 0 : ((_elm_lang$core$Native_Utils.cmp(projectedOffset, 0 - (boardWidth - model.width)) < 0) ? (0 - (boardWidth - model.width)) : projectedOffset);
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{horizontalOffset: newOffset});
 		});
-	var _user$project$LevelChooser$init = F2(
-		function (width, height) {
-			return {width: width, height: height, padding: 0.2, verticalTilesCount: 4, horizontalOffset: 0.0, oldHorizontalOffset: 0.0};
+	var _user$project$LevelChooser$init = F3(
+		function (levels, width, height) {
+			return {levels: levels, width: width, height: height, padding: 0.2, verticalTilesCount: 4, horizontalOffset: 0.0, oldHorizontalOffset: 0.0};
 		});
-	var _user$project$LevelChooser$Model = F6(
-		function (a, b, c, d, e, f) {
-			return {width: a, height: b, padding: c, verticalTilesCount: d, horizontalOffset: e, oldHorizontalOffset: f};
+	var _user$project$LevelChooser$Model = F7(
+		function (a, b, c, d, e, f, g) {
+			return {levels: a, width: b, height: c, padding: d, verticalTilesCount: e, horizontalOffset: f, oldHorizontalOffset: g};
 		});
 
 	var _user$project$MatrixUtils$getColumns = function (matrix) {
@@ -17818,13 +17817,13 @@
 	var _user$project$Picross$boardMousePos = F2(
 		function (_p17, model) {
 			var _p18 = _p17;
-			var _p22 = _p18._1;
-			var _p21 = _p18._0;
+			var _p21 = _p18._1;
+			var _p20 = _p18._0;
 			var newModel = _elm_lang$core$Native_Utils.update(
 				model,
 				{
 					currentSvgMousePos: _elm_lang$core$Maybe$Just(
-						{x: _p21, y: _p22})
+						{x: _p20, y: _p21})
 				});
 			var _p19 = {ctor: '_Tuple2', _0: model.state, _1: model.mouseButtonDown};
 			_v8_2:
@@ -17834,11 +17833,10 @@
 						case 'Playing':
 							return A2(
 								_user$project$Picross$boardMousePosOnGrid,
-								{ctor: '_Tuple2', _0: _p21, _1: _p22},
+								{ctor: '_Tuple2', _0: _p20, _1: _p21},
 								newModel);
 						case 'ChoosingLevel':
 							if ((_p19._1.ctor === 'Just') && (_p19._1._0.ctor === 'LeftButton')) {
-								var _p20 = _p19._0._0;
 								var downPos = A2(
 									_elm_lang$core$Maybe$withDefault,
 									{x: 0.0, y: 0.0},
@@ -17847,14 +17845,11 @@
 									_elm_lang$core$Maybe$withDefault,
 									{x: 0.0, y: 0.0},
 									newModel.currentSvgMousePos);
-								var diff = currentPos.x - downPos.x;
 								return _elm_lang$core$Native_Utils.update(
 									newModel,
 									{
 										state: _user$project$Model$ChoosingLevel(
-											_elm_lang$core$Native_Utils.update(
-												_p20,
-												{horizontalOffset: _p20.oldHorizontalOffset + diff}))
+											A3(_user$project$LevelChooser$mouseMoveWithLeftButton, downPos, currentPos, _p19._0._0))
 									});
 							} else {
 								break _v8_2;
@@ -17868,16 +17863,38 @@
 			} while(false);
 			return newModel;
 		});
-	var _user$project$Picross$mouseDownOnGrid = F2(
+	var _user$project$Picross$mouseDownOnGrid = function (model) {
+		var coordToSelection = function (coord) {
+			return {firstCell: coord, lastCell: coord};
+		};
+		return _user$project$Picross$isWinning(model) ? model : _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				selection: A2(_elm_lang$core$Maybe$map, coordToSelection, model.hoveredCell)
+			});
+	};
+	var _user$project$Picross$mouseDown = F2(
 		function (button, model) {
-			var coordToSelection = function (coord) {
-				return {firstCell: coord, lastCell: coord};
-			};
-			return _user$project$Picross$isWinning(model) ? model : _elm_lang$core$Native_Utils.update(
+			var newModel = _elm_lang$core$Native_Utils.update(
 				model,
 				{
-					selection: A2(_elm_lang$core$Maybe$map, coordToSelection, model.hoveredCell)
+					mouseButtonDown: _elm_lang$core$Maybe$Just(button),
+					downSvgMousePos: model.currentSvgMousePos
 				});
+			var _p22 = model.state;
+			switch (_p22.ctor) {
+				case 'Playing':
+					return _user$project$Picross$mouseDownOnGrid(newModel);
+				case 'ChoosingLevel':
+					return _elm_lang$core$Native_Utils.update(
+						newModel,
+						{
+							state: _user$project$Model$ChoosingLevel(
+								_user$project$LevelChooser$mouseDown(_p22._0))
+						});
+				default:
+					return newModel;
+			}
 		});
 	var _user$project$Picross$buttonIndexToMouseButton = function (buttonIndex) {
 		var _p23 = buttonIndex;
@@ -17887,49 +17904,22 @@
 			return _user$project$Types$RightButton;
 		}
 	};
-	var _user$project$Picross$mouseDown = F2(
-		function (button, model) {
-			var newModel = _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					mouseButtonDown: _elm_lang$core$Maybe$Just(
-						_user$project$Picross$buttonIndexToMouseButton(button)),
-					downSvgMousePos: model.currentSvgMousePos
-				});
-			var _p24 = model.state;
-			switch (_p24.ctor) {
-				case 'Playing':
-					return A2(_user$project$Picross$mouseDownOnGrid, button, newModel);
-				case 'ChoosingLevel':
-					var _p25 = _p24._0;
-					return _elm_lang$core$Native_Utils.update(
-						newModel,
-						{
-							state: _user$project$Model$ChoosingLevel(
-								_elm_lang$core$Native_Utils.update(
-									_p25,
-									{oldHorizontalOffset: _p25.horizontalOffset}))
-						});
-				default:
-					return newModel;
-			}
-		});
 	var _user$project$Picross$toggleCell = F2(
-		function (model, _p26) {
-			var _p27 = _p26;
-			var _p30 = _p27.row;
-			var _p29 = _p27.col;
-			var _p28 = A3(_eeue56$elm_flat_matrix$Matrix$get, _p29, _p30, model.board);
-			if (_p28.ctor === 'Just') {
+		function (model, _p24) {
+			var _p25 = _p24;
+			var _p28 = _p25.row;
+			var _p27 = _p25.col;
+			var _p26 = A3(_eeue56$elm_flat_matrix$Matrix$get, _p27, _p28, model.board);
+			if (_p26.ctor === 'Just') {
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{
 						board: A4(
 							_eeue56$elm_flat_matrix$Matrix$set,
-							_p29,
-							_p30,
+							_p27,
+							_p28,
 							_elm_lang$core$Native_Utils.update(
-								_p28._0,
+								_p26._0,
 								{userChoice: _user$project$Types$Empty}),
 							model.board)
 					});
@@ -17947,30 +17937,24 @@
 		return A2(
 			_elm_lang$core$Json_Decode$map,
 			msg,
-			A2(_elm_lang$core$Json_Decode$field, 'which', _elm_lang$core$Json_Decode$int));
+			A2(
+				_elm_lang$core$Json_Decode$map,
+				_user$project$Picross$buttonIndexToMouseButton,
+				A2(_elm_lang$core$Json_Decode$field, 'which', _elm_lang$core$Json_Decode$int)));
 	};
 	var _user$project$Picross$getFadeOutAnimAttrs = function (model) {
-		var _p31 = model.state;
-		if ((_p31.ctor === 'Won') && (_p31._0.ctor === 'WonAnimFadeOut')) {
-			return _mdgriffith$elm_style_animation$Animation$render(_p31._0._0);
+		var _p29 = model.state;
+		if ((_p29.ctor === 'Won') && (_p29._0.ctor === 'WonAnimFadeOut')) {
+			return _mdgriffith$elm_style_animation$Animation$render(_p29._0._0);
 		} else {
 			return {ctor: '[]'};
 		}
 	};
-	var _user$project$Picross$mouseEventDecoder = A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'clientY',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'clientX',
-			_elm_lang$core$Json_Decode$int,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Coord)));
 	var _user$project$Picross$drawWinningLabel = function (model) {
 		var gridHeight = _user$project$Grid$getGridHeight(model.grid);
 		var gridWidth = _user$project$Grid$getGridWidth(model.grid);
-		var _p32 = _user$project$Picross$isWinning(model);
-		if (_p32 === true) {
+		var _p30 = _user$project$Picross$isWinning(model);
+		if (_p30 === true) {
 			return {
 				ctor: '::',
 				_0: A2(
@@ -18014,12 +17998,12 @@
 		}
 	};
 	var _user$project$Picross$selectionToRectangle = function (selection) {
-		var _p33 = (_elm_lang$core$Native_Utils.cmp(selection.firstCell.row, selection.lastCell.row) < 1) ? {ctor: '_Tuple2', _0: selection.firstCell.row, _1: selection.lastCell.row} : {ctor: '_Tuple2', _0: selection.lastCell.row, _1: selection.firstCell.row};
-		var row1 = _p33._0;
-		var row2 = _p33._1;
-		var _p34 = (_elm_lang$core$Native_Utils.cmp(selection.firstCell.col, selection.lastCell.col) < 1) ? {ctor: '_Tuple2', _0: selection.firstCell.col, _1: selection.lastCell.col} : {ctor: '_Tuple2', _0: selection.lastCell.col, _1: selection.firstCell.col};
-		var col1 = _p34._0;
-		var col2 = _p34._1;
+		var _p31 = (_elm_lang$core$Native_Utils.cmp(selection.firstCell.row, selection.lastCell.row) < 1) ? {ctor: '_Tuple2', _0: selection.firstCell.row, _1: selection.lastCell.row} : {ctor: '_Tuple2', _0: selection.lastCell.row, _1: selection.firstCell.row};
+		var row1 = _p31._0;
+		var row2 = _p31._1;
+		var _p32 = (_elm_lang$core$Native_Utils.cmp(selection.firstCell.col, selection.lastCell.col) < 1) ? {ctor: '_Tuple2', _0: selection.firstCell.col, _1: selection.lastCell.col} : {ctor: '_Tuple2', _0: selection.lastCell.col, _1: selection.firstCell.col};
+		var col1 = _p32._0;
+		var col2 = _p32._1;
 		return {
 			ctor: '_Tuple2',
 			_0: {col: col1, row: row1},
@@ -18027,9 +18011,9 @@
 		};
 	};
 	var _user$project$Picross$selectionToList = function (selection) {
-		var _p35 = _user$project$Picross$selectionToRectangle(selection);
-		var topLeft = _p35._0;
-		var bottomRight = _p35._1;
+		var _p33 = _user$project$Picross$selectionToRectangle(selection);
+		var topLeft = _p33._0;
+		var bottomRight = _p33._1;
 		var colList = A2(
 			_elm_lang$core$List$map,
 			F2(
@@ -18072,12 +18056,12 @@
 					return (_elm_lang$core$Native_Utils.eq(cellValue, _user$project$Types$Selected) && _elm_lang$core$Native_Utils.eq(value, _user$project$Types$Rejected)) ? _user$project$Types$Selected : value;
 				});
 			var setCell = F3(
-				function (value, _p36, board) {
-					var _p37 = _p36;
+				function (value, _p34, board) {
+					var _p35 = _p34;
 					return A4(
 						_eeue56$elm_flat_matrix$Matrix$update,
-						_p37.col,
-						_p37.row,
+						_p35.col,
+						_p35.row,
 						function (cell) {
 							return _elm_lang$core$Native_Utils.update(
 								cell,
@@ -18090,24 +18074,24 @@
 			var toggleValue = function (value) {
 				return _elm_lang$core$Native_Utils.eq(value, cellType) ? _user$project$Types$Empty : cellType;
 			};
-			var _p38 = model.selection;
-			if (_p38.ctor === 'Nothing') {
+			var _p36 = model.selection;
+			if (_p36.ctor === 'Nothing') {
 				return model.board;
 			} else {
-				var _p40 = _p38._0;
+				var _p38 = _p36._0;
 				var setValue = A2(
 					_elm_lang$core$Maybe$withDefault,
 					_user$project$Types$Selected,
 					A2(
 						_elm_lang$core$Maybe$map,
-						function (_p39) {
+						function (_p37) {
 							return toggleValue(
 								function (_) {
 									return _.userChoice;
-								}(_p39));
+								}(_p37));
 						},
-						A3(_eeue56$elm_flat_matrix$Matrix$get, _p40.firstCell.col, _p40.firstCell.row, model.board)));
-				var selList = _user$project$Picross$selectionToList(_p40);
+						A3(_eeue56$elm_flat_matrix$Matrix$get, _p38.firstCell.col, _p38.firstCell.row, model.board)));
+				var selList = _user$project$Picross$selectionToList(_p38);
 				return A3(
 					_elm_lang$core$List$foldr,
 					setCell(setValue),
@@ -18116,19 +18100,19 @@
 			}
 		});
 	var _user$project$Picross$mouseUp = function (model) {
-		var _p41 = model.mouseButtonDown;
-		if (_p41.ctor === 'Nothing') {
+		var _p39 = model.mouseButtonDown;
+		if (_p39.ctor === 'Nothing') {
 			return model;
 		} else {
-			var _p42 = _user$project$Picross$isWinning(model);
-			if (_p42 === true) {
+			var _p40 = _user$project$Picross$isWinning(model);
+			if (_p40 === true) {
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{mouseButtonDown: _elm_lang$core$Maybe$Nothing});
 			} else {
 				var value = function () {
-					var _p43 = _p41._0;
-					if (_p43.ctor === 'LeftButton') {
+					var _p41 = _p39._0;
+					if (_p41.ctor === 'LeftButton') {
 						return _user$project$Types$Selected;
 					} else {
 						return _user$project$Types$Rejected;
@@ -18143,25 +18127,25 @@
 	};
 	var _user$project$Picross$isHoveredCol = F2(
 		function (model, testCol) {
-			var _p44 = model.hoveredCell;
-			if (_p44.ctor === 'Just') {
-				return _elm_lang$core$Native_Utils.eq(testCol, _p44._0.col);
+			var _p42 = model.hoveredCell;
+			if (_p42.ctor === 'Just') {
+				return _elm_lang$core$Native_Utils.eq(testCol, _p42._0.col);
 			} else {
 				return false;
 			}
 		});
 	var _user$project$Picross$isHoveredRow = F2(
 		function (model, testRow) {
-			var _p45 = model.hoveredCell;
-			if (_p45.ctor === 'Just') {
-				return _elm_lang$core$Native_Utils.eq(testRow, _p45._0.row);
+			var _p43 = model.hoveredCell;
+			if (_p43.ctor === 'Just') {
+				return _elm_lang$core$Native_Utils.eq(testRow, _p43._0.row);
 			} else {
 				return false;
 			}
 		});
 	var _user$project$Picross$drawVerticalLabelsHover = function (model) {
-		var _p46 = {ctor: '_Tuple2', _0: model.hoveredCell, _1: model.state};
-		if (((_p46.ctor === '_Tuple2') && (_p46._0.ctor === 'Just')) && (_p46._1.ctor === 'Playing')) {
+		var _p44 = {ctor: '_Tuple2', _0: model.hoveredCell, _1: model.state};
+		if (((_p44.ctor === '_Tuple2') && (_p44._0.ctor === 'Just')) && (_p44._1.ctor === 'Playing')) {
 			return {
 				ctor: '::',
 				_0: A2(
@@ -18173,7 +18157,7 @@
 								function (_) {
 									return _.x;
 								}(
-									A3(_user$project$Grid$getCellCoord, _p46._0._0.col, 0, model.grid)))),
+									A3(_user$project$Grid$getCellCoord, _p44._0._0.col, 0, model.grid)))),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$svg$Svg_Attributes$y(
@@ -18280,8 +18264,8 @@
 			});
 	};
 	var _user$project$Picross$drawHorizontalLabelsHover = function (model) {
-		var _p47 = {ctor: '_Tuple2', _0: model.hoveredCell, _1: model.state};
-		if (((_p47.ctor === '_Tuple2') && (_p47._0.ctor === 'Just')) && (_p47._1.ctor === 'Playing')) {
+		var _p45 = {ctor: '_Tuple2', _0: model.hoveredCell, _1: model.state};
+		if (((_p45.ctor === '_Tuple2') && (_p45._0.ctor === 'Just')) && (_p45._1.ctor === 'Playing')) {
 			return {
 				ctor: '::',
 				_0: A2(
@@ -18297,7 +18281,7 @@
 									function (_) {
 										return _.y;
 									}(
-										A3(_user$project$Grid$getCellCoord, 0, _p47._0._0.row, model.grid)))),
+										A3(_user$project$Grid$getCellCoord, 0, _p45._0._0.row, model.grid)))),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$svg$Svg_Attributes$height(
@@ -18410,8 +18394,8 @@
 			});
 	};
 	var _user$project$Picross$drawGridAndLabels = function (model) {
-		var _p48 = model.state;
-		if ((_p48.ctor === 'Won') && (_p48._0.ctor === 'WonAnimShrinking')) {
+		var _p46 = model.state;
+		if ((_p46.ctor === 'Won') && (_p46._0.ctor === 'WonAnimShrinking')) {
 			return {ctor: '[]'};
 		} else {
 			return _elm_lang$core$List$concat(
@@ -18438,14 +18422,14 @@
 		}
 	};
 	var _user$project$Picross$drawRejected = F2(
-		function (model, _p49) {
-			var _p50 = _p49;
+		function (model, _p47) {
+			var _p48 = _p47;
 			var attrs = _user$project$Picross$getFadeOutAnimAttrs(model);
 			var width = '4.0';
 			var color = 'red';
 			var padding = 4.0;
 			var cellSize = model.grid.cellSize;
-			var cellCoord = A3(_user$project$Grid$getCellCoord, _p50.col, _p50.row, model.grid);
+			var cellCoord = A3(_user$project$Grid$getCellCoord, _p48.col, _p48.row, model.grid);
 			return A2(
 				_elm_lang$svg$Svg$g,
 				attrs,
@@ -18540,19 +18524,19 @@
 				});
 		});
 	var _user$project$Picross$drawSelected = F2(
-		function (model, _p51) {
-			var _p52 = _p51;
-			var _p57 = _p52.row;
-			var _p56 = _p52.col;
+		function (model, _p49) {
+			var _p50 = _p49;
+			var _p55 = _p50.row;
+			var _p54 = _p50.col;
 			var attrs = function () {
-				var _p53 = model.state;
-				if ((_p53.ctor === 'Won') && (_p53._0.ctor === 'WonAnimShrinking')) {
-					var _p54 = A2(
+				var _p51 = model.state;
+				if ((_p51.ctor === 'Won') && (_p51._0.ctor === 'WonAnimShrinking')) {
+					var _p52 = A2(
 						_elm_lang$core$Dict$get,
-						{ctor: '_Tuple2', _0: _p56, _1: _p57},
-						_p53._0._0);
-					if (_p54.ctor === 'Just') {
-						return _mdgriffith$elm_style_animation$Animation$render(_p54._0.anim);
+						{ctor: '_Tuple2', _0: _p54, _1: _p55},
+						_p51._0._0);
+					if (_p52.ctor === 'Just') {
+						return _mdgriffith$elm_style_animation$Animation$render(_p52._0.anim);
 					} else {
 						return {ctor: '[]'};
 					}
@@ -18563,10 +18547,10 @@
 			var color = '#383838';
 			var padding = 1.0;
 			var cellSize = model.grid.cellSize;
-			var cellCoord = A3(_user$project$Grid$getCellCoord, _p56, _p57, model.grid);
+			var cellCoord = A3(_user$project$Grid$getCellCoord, _p54, _p55, model.grid);
 			var pos = function () {
-				var _p55 = attrs;
-				if (_p55.ctor === '[]') {
+				var _p53 = attrs;
+				if (_p53.ctor === '[]') {
 					return {
 						ctor: '::',
 						_0: _elm_lang$svg$Svg_Attributes$x(
@@ -18612,8 +18596,8 @@
 		});
 	var _user$project$Picross$drawCell = F3(
 		function (model, gridCoord, cell) {
-			var _p58 = cell.userChoice;
-			switch (_p58.ctor) {
+			var _p56 = cell.userChoice;
+			switch (_p56.ctor) {
 				case 'Selected':
 					return _elm_lang$core$Maybe$Just(
 						A2(_user$project$Picross$drawSelected, model, gridCoord));
@@ -18626,16 +18610,16 @@
 		});
 	var _user$project$Picross$drawCells = function (model) {
 		var filterFunc = function () {
-			var _p59 = model.state;
-			if ((_p59.ctor === 'Won') && (_p59._0.ctor === 'WonAnimShrinking')) {
-				return function (_p60) {
-					var _p61 = _p60;
-					return _p61._1.value;
+			var _p57 = model.state;
+			if ((_p57.ctor === 'Won') && (_p57._0.ctor === 'WonAnimShrinking')) {
+				return function (_p58) {
+					var _p59 = _p58;
+					return _p59._1.value;
 				};
 			} else {
-				return function (_p62) {
-					var _p63 = _p62;
-					return !_elm_lang$core$Native_Utils.eq(_p63._1.userChoice, _user$project$Types$Empty);
+				return function (_p60) {
+					var _p61 = _p60;
+					return !_elm_lang$core$Native_Utils.eq(_p61._1.userChoice, _user$project$Types$Empty);
 				};
 			}
 		}();
@@ -18645,13 +18629,13 @@
 			_elm_lang$core$Array$toList(
 				A2(
 					_elm_lang$core$Array$map,
-					function (_p64) {
-						var _p65 = _p64;
+					function (_p62) {
+						var _p63 = _p62;
 						return A3(
 							_user$project$Picross$drawCell,
 							model,
-							{col: _p65._0._0, row: _p65._0._1},
-							_p65._1);
+							{col: _p63._0._0, row: _p63._0._1},
+							_p63._1);
 					},
 					A2(
 						_elm_lang$core$Array$filter,
@@ -18659,11 +18643,11 @@
 						_eeue56$elm_flat_matrix$Matrix$toIndexedArray(model.board)))));
 	};
 	var _user$project$Picross$drawHovered = function (model) {
-		var _p66 = model.hoveredCell;
-		if (_p66.ctor === 'Nothing') {
+		var _p64 = model.hoveredCell;
+		if (_p64.ctor === 'Nothing') {
 			return {ctor: '[]'};
 		} else {
-			var cellCoord = A3(_user$project$Grid$getCellCoord, _p66._0.col, _p66._0.row, model.grid);
+			var cellCoord = A3(_user$project$Grid$getCellCoord, _p64._0.col, _p64._0.row, model.grid);
 			return {
 				ctor: '::',
 				_0: A2(
@@ -18699,9 +18683,9 @@
 		}
 	};
 	var _user$project$Picross$drawRect = F2(
-		function (model, _p67) {
-			var _p68 = _p67;
-			var cellCoord = A3(_user$project$Grid$getCellCoord, _p68.col, _p68.row, model.grid);
+		function (model, _p65) {
+			var _p66 = _p65;
+			var cellCoord = A3(_user$project$Grid$getCellCoord, _p66.col, _p66.row, model.grid);
 			return A2(
 				_elm_lang$svg$Svg$rect,
 				{
@@ -18732,19 +18716,19 @@
 				{ctor: '[]'});
 		});
 	var _user$project$Picross$drawSelection = function (model) {
-		var _p69 = model.selection;
-		if (_p69.ctor === 'Nothing') {
+		var _p67 = model.selection;
+		if (_p67.ctor === 'Nothing') {
 			return {ctor: '[]'};
 		} else {
 			return A2(
 				_elm_lang$core$List$map,
 				_user$project$Picross$drawRect(model),
-				_user$project$Picross$selectionToList(_p69._0));
+				_user$project$Picross$selectionToList(_p67._0));
 		}
 	};
 	var _user$project$Picross$getSvgContent = function (model) {
-		var _p70 = model.state;
-		switch (_p70.ctor) {
+		var _p68 = model.state;
+		switch (_p68.ctor) {
 			case 'Init':
 				return {
 					ctor: '_Tuple2',
@@ -18759,13 +18743,7 @@
 						_0: _elm_lang$svg$Svg_Attributes$viewBox('0.0 0.0 800.0 600.0'),
 						_1: {ctor: '[]'}
 					},
-					_1: A2(
-						_user$project$LevelChooser$view,
-						_p70._0,
-						A2(
-							_elm_lang$core$Maybe$withDefault,
-							{ctor: '[]'},
-							model.levels))
+					_1: _user$project$LevelChooser$view(_p68._0)
 				};
 			default:
 				var bbox = model.boundingBox;
@@ -18812,12 +18790,12 @@
 									_1: {
 										ctor: '::',
 										_0: function () {
-											var _p71 = {
+											var _p69 = {
 												ctor: '_Tuple2',
 												_0: _user$project$Picross$isWinning(model),
 												_1: model.selection
 											};
-											if (((_p71.ctor === '_Tuple2') && (_p71._0 === false)) && (_p71._1.ctor === 'Nothing')) {
+											if (((_p69.ctor === '_Tuple2') && (_p69._0 === false)) && (_p69._1.ctor === 'Nothing')) {
 												return _user$project$Picross$drawHovered(model);
 											} else {
 												return {ctor: '[]'};
@@ -18836,9 +18814,9 @@
 		}
 	};
 	var _user$project$Picross$viewSvg = function (model) {
-		var _p72 = _user$project$Picross$getSvgContent(model);
-		var augmentAttributes = _p72._0;
-		var contentList = _p72._1;
+		var _p70 = _user$project$Picross$getSvgContent(model);
+		var augmentAttributes = _p70._0;
+		var contentList = _p70._1;
 		var baseAttributes = {
 			ctor: '::',
 			_0: _elm_lang$svg$Svg_Attributes$id('board'),
@@ -18859,19 +18837,12 @@
 							ctor: '::',
 							_0: A2(
 								_elm_lang$svg$Svg_Events$on,
-								'mousemove',
-								A2(_elm_lang$core$Json_Decode$map, _user$project$Msg$SvgMouseMove, _user$project$Picross$mouseEventDecoder)),
+								'mouseleave',
+								_elm_lang$core$Json_Decode$succeed(_user$project$Msg$SvgMouseLeave)),
 							_1: {
 								ctor: '::',
-								_0: A2(
-									_elm_lang$svg$Svg_Events$on,
-									'mouseleave',
-									_elm_lang$core$Json_Decode$succeed(_user$project$Msg$SvgMouseLeave)),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Picross$contextMenuSuppressor,
-									_1: {ctor: '[]'}
-								}
+								_0: _user$project$Picross$contextMenuSuppressor,
+								_1: {ctor: '[]'}
 							}
 						}
 					}
@@ -18894,8 +18865,8 @@
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p73 = model.state;
-						if (_p73.ctor === 'ChoosingLevel') {
+						var _p71 = model.state;
+						if (_p71.ctor === 'ChoosingLevel') {
 							return _elm_lang$html$Html$text('');
 						} else {
 							return A2(
@@ -18960,17 +18931,18 @@
 				}
 			});
 	};
-	var _user$project$Picross$int2BoolConverter = A2(
+	var _user$project$Picross$int2BoolDecoder = A2(
 		_elm_lang$core$Json_Decode$map,
-		function (v) {
-			return _elm_lang$core$Native_Utils.cmp(v, 0) > 0;
-		},
+		F2(
+			function (x, y) {
+				return _elm_lang$core$Native_Utils.eq(x, y);
+			})(1),
 		_elm_lang$core$Json_Decode$int);
 	var _user$project$Picross$decodeLevel = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'content',
 		_elm_lang$core$Json_Decode$list(
-			_elm_lang$core$Json_Decode$list(_user$project$Picross$int2BoolConverter)),
+			_elm_lang$core$Json_Decode$list(_user$project$Picross$int2BoolDecoder)),
 		A4(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
 			'description',
@@ -19016,36 +18988,36 @@
 					A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$float));
 			},
 			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$float)));
-	var _user$project$Picross$requestTransMousePos = _elm_lang$core$Native_Platform.outgoingPort(
-		'requestTransMousePos',
-		function (v) {
-			return [v._0, v._1];
-		});
-	var _user$project$Picross$requestTransMousePos2 = _elm_lang$core$Native_Platform.outgoingPort(
-		'requestTransMousePos2',
+	var _user$project$Picross$requestSvgMousePos = _elm_lang$core$Native_Platform.outgoingPort(
+		'requestSvgMousePos',
 		function (v) {
 			return [v._0, v._1];
 		});
 	var _user$project$Picross$update = F2(
 		function (msg, model) {
-			var _p74 = msg;
-			switch (_p74.ctor) {
+			var _p72 = msg;
+			switch (_p72.ctor) {
 				case 'BoardMouseDown':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_user$project$Picross$mouseDown, _p74._0, model),
+						A2(_user$project$Picross$mouseDown, _p72._0, model),
 						{ctor: '[]'});
 				case 'GetLevels':
-					if (_p74._0.ctor === 'Ok') {
+					if (_p72._0.ctor === 'Ok') {
+						var _p73 = _p72._0._0;
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								model,
 								{
 									levels: _elm_lang$core$Maybe$Just(
-										_user$project$Picross$sortBySize(_p74._0._0)),
+										_user$project$Picross$sortBySize(_p73)),
 									state: _user$project$Model$ChoosingLevel(
-										A2(_user$project$LevelChooser$init, 800.0, 600.0))
+										A3(
+											_user$project$LevelChooser$init,
+											_user$project$Picross$sortBySize(_p73),
+											800.0,
+											600.0))
 								}),
 							{ctor: '[]'});
 					} else {
@@ -19057,7 +19029,7 @@
 				case 'ChoseLevel':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_user$project$Picross$choseLevel, _p74._0, model),
+						A2(_user$project$Picross$choseLevel, _p72._0, model),
 						{
 							ctor: '::',
 							_0: _user$project$Picross$computeBoardSize(
@@ -19071,14 +19043,14 @@
 						{ctor: '[]'});
 				case 'Animate':
 					var computeNewStyle = function (anim) {
-						return A2(_mdgriffith$elm_style_animation$Animation_Messenger$update, _p74._0, anim);
+						return A2(_mdgriffith$elm_style_animation$Animation_Messenger$update, _p72._0, anim);
 					};
-					var _p75 = model.state;
-					if (_p75.ctor === 'Won') {
-						if (_p75._0.ctor === 'WonAnimFadeOut') {
-							var _p76 = computeNewStyle(_p75._0._0);
-							var newStyle = _p76._0;
-							var cmds = _p76._1;
+					var _p74 = model.state;
+					if (_p74.ctor === 'Won') {
+						if (_p74._0.ctor === 'WonAnimFadeOut') {
+							var _p75 = computeNewStyle(_p74._0._0);
+							var newStyle = _p75._0;
+							var cmds = _p75._1;
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
@@ -19093,7 +19065,7 @@
 							var newAnimsAndCmds = A2(
 								_elm_lang$core$Dict$map,
 								F2(
-									function (_p77, shrinkAnim) {
+									function (_p76, shrinkAnim) {
 										var animAndCmd = computeNewStyle(shrinkAnim.anim);
 										return {
 											ctor: '_Tuple2',
@@ -19105,19 +19077,19 @@
 											_1: _elm_lang$core$Tuple$second(animAndCmd)
 										};
 									}),
-								_p75._0._0);
+								_p74._0._0);
 							var newAnims = A2(
 								_elm_lang$core$Dict$map,
 								F2(
-									function (_p78, animAndCmd) {
+									function (_p77, animAndCmd) {
 										return _elm_lang$core$Tuple$first(animAndCmd);
 									}),
 								newAnimsAndCmds);
 							var cmds = A2(
 								_elm_lang$core$List$map,
-								function (_p79) {
+								function (_p78) {
 									return _elm_lang$core$Tuple$second(
-										_elm_lang$core$Tuple$second(_p79));
+										_elm_lang$core$Tuple$second(_p78));
 								},
 								_elm_lang$core$Dict$toList(newAnimsAndCmds));
 							return A2(
@@ -19142,20 +19114,9 @@
 						_elm_lang$core$Native_Utils.update(
 							model,
 							{
-								boundingBox: {x: _p74._0._0, y: _p74._0._1, width: _p74._0._2, height: _p74._0._3}
+								boundingBox: {x: _p72._0._0, y: _p72._0._1, width: _p72._0._2, height: _p72._0._3}
 							}),
 						{ctor: '[]'});
-				case 'SvgMouseMove':
-					var _p80 = _p74._0;
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						model,
-						{
-							ctor: '::',
-							_0: _user$project$Picross$requestTransMousePos(
-								{ctor: '_Tuple2', _0: _p80.x, _1: _p80.y}),
-							_1: {ctor: '[]'}
-						});
 				case 'SvgMouseLeave':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -19163,15 +19124,10 @@
 							model,
 							{hoveredCell: _elm_lang$core$Maybe$Nothing, currentSvgMousePos: _elm_lang$core$Maybe$Nothing}),
 						{ctor: '[]'});
-				case 'TransMousePosResult':
+				case 'SvgMousePosResult':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						model,
-						{ctor: '[]'});
-				case 'TransMousePosResult2':
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_user$project$Picross$boardMousePos, _p74._0, model),
+						A2(_user$project$Picross$boardMousePos, _p72._0, model),
 						{ctor: '[]'});
 				case 'EndOfFade':
 					return A2(
@@ -19184,8 +19140,8 @@
 						model,
 						{
 							ctor: '::',
-							_0: _user$project$Picross$requestTransMousePos2(
-								{ctor: '_Tuple2', _0: _p74._0.x, _1: _p74._0.y}),
+							_0: _user$project$Picross$requestSvgMousePos(
+								{ctor: '_Tuple2', _0: _p72._0.x, _1: _p72._0.y}),
 							_1: {ctor: '[]'}
 						});
 				case 'MouseUp':
@@ -19194,12 +19150,12 @@
 						_user$project$Picross$mouseUp(model),
 						{ctor: '[]'});
 				case 'LevelChooserMsg':
-					var _p81 = model.state;
-					if (_p81.ctor === 'ChoosingLevel') {
-						var _p82 = _p74._0;
+					var _p79 = model.state;
+					if (_p79.ctor === 'ChoosingLevel') {
+						var _p80 = _p72._0;
 						return _elm_lang$core$Native_Utils.eq(model.currentSvgMousePos, model.downSvgMousePos) ? A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
-							A2(_user$project$Picross$choseLevel, _p82._0, model),
+							A2(_user$project$Picross$choseLevel, _p80._0, model),
 							{
 								ctor: '::',
 								_0: _user$project$Picross$computeBoardSize(
@@ -19222,7 +19178,14 @@
 							model,
 							{
 								state: _user$project$Model$ChoosingLevel(
-									A2(_user$project$LevelChooser$init, 800.0, 600.0))
+									A3(
+										_user$project$LevelChooser$init,
+										A2(
+											_elm_lang$core$Maybe$withDefault,
+											{ctor: '[]'},
+											model.levels),
+										800.0,
+										600.0))
 							}),
 						{ctor: '[]'});
 				default:
@@ -19232,22 +19195,8 @@
 						{ctor: '[]'});
 			}
 		});
-	var _user$project$Picross$transMousePosResult = _elm_lang$core$Native_Platform.incomingPort(
-		'transMousePosResult',
-		A2(
-			_elm_lang$core$Json_Decode$andThen,
-			function (x0) {
-				return A2(
-					_elm_lang$core$Json_Decode$andThen,
-					function (x1) {
-						return _elm_lang$core$Json_Decode$succeed(
-							{ctor: '_Tuple2', _0: x0, _1: x1});
-					},
-					A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$float));
-			},
-			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$float)));
-	var _user$project$Picross$transMousePosResult2 = _elm_lang$core$Native_Platform.incomingPort(
-		'transMousePosResult2',
+	var _user$project$Picross$svgMousePosResult = _elm_lang$core$Native_Platform.incomingPort(
+		'svgMousePosResult',
 		A2(
 			_elm_lang$core$Json_Decode$andThen,
 			function (x0) {
@@ -19273,18 +19222,14 @@
 						_user$project$Picross$computeAnimations(model)),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Picross$transMousePosResult(_user$project$Msg$TransMousePosResult),
+						_0: _user$project$Picross$svgMousePosResult(_user$project$Msg$SvgMousePosResult),
 						_1: {
 							ctor: '::',
-							_0: _user$project$Picross$transMousePosResult2(_user$project$Msg$TransMousePosResult2),
+							_0: _elm_lang$mouse$Mouse$moves(_user$project$Msg$MousePos),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$mouse$Mouse$moves(_user$project$Msg$MousePos),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$mouse$Mouse$ups(_user$project$Msg$MouseUp),
-									_1: {ctor: '[]'}
-								}
+								_0: _elm_lang$mouse$Mouse$ups(_user$project$Msg$MouseUp),
+								_1: {ctor: '[]'}
 							}
 						}
 					}
