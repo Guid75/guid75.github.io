@@ -50,10 +50,29 @@
 
 	var Elm = __webpack_require__(2);
 
-	var myapp = Elm.Picross.embed(document.getElementById('main'));
+	var localStorageKey = 'picross-elm';
+
+	function init() {
+	    var ret = {
+	        doneLevels: [],
+	        foo: 2
+	    };
+	    if (window.localStorage) {
+	        try {
+	            var obj = JSON.parse(localStorage.getItem(localStorageKey));
+	            ret.doneLevels = obj[0] || [];
+	            ret.foo = 4;
+	        } catch (e) {}
+	    }
+
+	    return ret;
+	}
+
+	var myapp = Elm.Picross.embed(document.getElementById('main'), init());
 
 	myapp.ports.computeBoardSize.subscribe(computeBoardSize);
 	myapp.ports.requestSvgMousePos.subscribe(requestSvgMousePos);
+	myapp.ports.save.subscribe(save);
 
 	function computeBoardSize() {
 	    var board = document.getElementById('board');
@@ -67,7 +86,6 @@
 	    }, 10);
 	}
 
-
 	function requestSvgMousePos(pos) {
 	    var svg = document.getElementById('board');
 	    var rect = svg.getBoundingClientRect();
@@ -76,6 +94,12 @@
 	    pt.y = pos[1];
 	    var p = pt.matrixTransform(svg.getScreenCTM().inverse());
 	    myapp.ports.svgMousePosResult.send([p.x, p.y]);
+	}
+
+	function save(data) {
+	    if (window.localStorage) {
+	        localStorage.setItem(localStorageKey, JSON.stringify(data));
+	    }
 	}
 
 
@@ -16876,9 +16900,9 @@
 		function (a, b) {
 			return {firstCell: a, lastCell: b};
 		});
-	var _user$project$Types$Level = F3(
-		function (a, b, c) {
-			return {name: a, description: b, content: c};
+	var _user$project$Types$Level = F4(
+		function (a, b, c, d) {
+			return {name: a, uuid: b, description: c, content: d};
 		});
 	var _user$project$Types$Empty = {ctor: 'Empty'};
 	var _user$project$Types$Rejected = {ctor: 'Rejected'};
@@ -17166,6 +17190,14 @@
 	};
 	var _user$project$LevelChooser$drawTile = F3(
 		function (model, index, level) {
+			var tileColor = function () {
+				var _p0 = A2(_elm_lang$core$List$member, level.uuid, model.doneLevels);
+				if (_p0 === true) {
+					return 'green';
+				} else {
+					return 'blue';
+				}
+			}();
 			var col = (index / model.verticalTilesCount) | 0;
 			var row = A2(_elm_lang$core$Basics_ops['%'], index, model.verticalTilesCount);
 			var tileSize = _user$project$LevelChooser$computeTileSize(model);
@@ -17179,7 +17211,7 @@
 						ctor: '::',
 						_0: _elm_lang$svg$Svg_Events$onMouseUp(
 							_user$project$Msg$LevelChooserMsg(
-								_user$project$Msg$MouseUpOnTile(level.name))),
+								_user$project$Msg$MouseUpOnTile(level.uuid))),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -17213,7 +17245,7 @@
 													_elm_lang$core$Basics$toString(tileSize)),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$fill('blue'),
+													_0: _elm_lang$svg$Svg_Attributes$fill(tileColor),
 													_1: {ctor: '[]'}
 												}
 											}
@@ -17351,13 +17383,13 @@
 				model,
 				{horizontalOffset: newOffset});
 		});
-	var _user$project$LevelChooser$init = F3(
-		function (levels, width, height) {
-			return {levels: levels, width: width, height: height, padding: 0.2, verticalTilesCount: 4, horizontalOffset: 0.0, oldHorizontalOffset: 0.0};
+	var _user$project$LevelChooser$init = F4(
+		function (levels, width, height, doneLevels) {
+			return {levels: levels, width: width, height: height, padding: 0.2, verticalTilesCount: 4, horizontalOffset: 0.0, oldHorizontalOffset: 0.0, doneLevels: doneLevels};
 		});
-	var _user$project$LevelChooser$Model = F7(
-		function (a, b, c, d, e, f, g) {
-			return {levels: a, width: b, height: c, padding: d, verticalTilesCount: e, horizontalOffset: f, oldHorizontalOffset: g};
+	var _user$project$LevelChooser$Model = F8(
+		function (a, b, c, d, e, f, g, h) {
+			return {levels: a, width: b, height: c, padding: d, verticalTilesCount: e, horizontalOffset: f, oldHorizontalOffset: g, doneLevels: h};
 		});
 
 	var _user$project$MatrixUtils$getColumns = function (matrix) {
@@ -17445,7 +17477,9 @@
 									return function (i) {
 										return function (j) {
 											return function (k) {
-												return {board: a, mouseButtonDown: b, currentSvgMousePos: c, downSvgMousePos: d, state: e, grid: f, hoveredCell: g, selection: h, levels: i, currentLevel: j, boundingBox: k};
+												return function (l) {
+													return {board: a, mouseButtonDown: b, currentSvgMousePos: c, downSvgMousePos: d, state: e, grid: f, hoveredCell: g, selection: h, levels: i, currentLevel: j, boundingBox: k, doneLevels: l};
+												};
 											};
 										};
 									};
@@ -17465,31 +17499,34 @@
 		return {ctor: 'ChoosingLevel', _0: a};
 	};
 	var _user$project$Model$Init = {ctor: 'Init'};
-	var _user$project$Model$init = {
-		board: A3(
-			_eeue56$elm_flat_matrix$Matrix$repeat,
-			17,
-			20,
-			A2(_user$project$Types$Cell, _user$project$Types$Empty, false)),
-		state: _user$project$Model$Init,
-		mouseButtonDown: _elm_lang$core$Maybe$Nothing,
-		currentSvgMousePos: _elm_lang$core$Maybe$Nothing,
-		downSvgMousePos: _elm_lang$core$Maybe$Nothing,
-		grid: {
-			colCount: 17,
-			rowCount: 20,
-			boldInterval: 5,
-			boldThickness: 3.0,
-			thinThickness: 1.0,
-			strokeColor: _user$project$Model$gridColor,
-			cellSize: 20.0,
-			topLeft: {x: 0.0, y: 0.0}
-		},
-		hoveredCell: _elm_lang$core$Maybe$Nothing,
-		selection: _elm_lang$core$Maybe$Nothing,
-		levels: _elm_lang$core$Maybe$Nothing,
-		currentLevel: _elm_lang$core$Maybe$Nothing,
-		boundingBox: {x: 0.0, y: 0.0, width: 0.0, height: 0.0}
+	var _user$project$Model$init = function (doneLevels) {
+		return {
+			board: A3(
+				_eeue56$elm_flat_matrix$Matrix$repeat,
+				17,
+				20,
+				A2(_user$project$Types$Cell, _user$project$Types$Empty, false)),
+			state: _user$project$Model$Init,
+			mouseButtonDown: _elm_lang$core$Maybe$Nothing,
+			currentSvgMousePos: _elm_lang$core$Maybe$Nothing,
+			downSvgMousePos: _elm_lang$core$Maybe$Nothing,
+			grid: {
+				colCount: 17,
+				rowCount: 20,
+				boldInterval: 5,
+				boldThickness: 3.0,
+				thinThickness: 1.0,
+				strokeColor: _user$project$Model$gridColor,
+				cellSize: 20.0,
+				topLeft: {x: 0.0, y: 0.0}
+			},
+			hoveredCell: _elm_lang$core$Maybe$Nothing,
+			selection: _elm_lang$core$Maybe$Nothing,
+			levels: _elm_lang$core$Maybe$Nothing,
+			currentLevel: _elm_lang$core$Maybe$Nothing,
+			boundingBox: {x: 0.0, y: 0.0, width: 0.0, height: 0.0},
+			doneLevels: doneLevels
+		};
 	};
 	var _user$project$Model$WonAnimShrinking = function (a) {
 		return {ctor: 'WonAnimShrinking', _0: a};
@@ -17637,6 +17674,15 @@
 					_user$project$Model$WonAnimShrinking(anims))
 			});
 	};
+	var _user$project$Picross$storeLevelToDoneLevels = F2(
+		function (levelUuid, levels) {
+			var _p9 = A2(_elm_lang$core$List$member, levelUuid, levels);
+			if (_p9 === true) {
+				return levels;
+			} else {
+				return {ctor: '::', _0: levelUuid, _1: levels};
+			}
+		});
 	var _user$project$Picross$cheat = function (model) {
 		var resolve = function (cell) {
 			return cell.value ? _elm_lang$core$Native_Utils.update(
@@ -17652,8 +17698,8 @@
 			});
 	};
 	var _user$project$Picross$isWinning = function (model) {
-		var _p9 = model.state;
-		if (_p9.ctor === 'Won') {
+		var _p10 = model.state;
+		if (_p10.ctor === 'Won') {
 			return true;
 		} else {
 			return false;
@@ -17666,8 +17712,8 @@
 			_1: {ctor: '[]'}
 		});
 	var _user$project$Picross$checkWinning = function (model) {
-		var _p10 = model.state;
-		if (_p10.ctor === 'Playing') {
+		var _p11 = model.state;
+		if (_p11.ctor === 'Playing') {
 			var isWrongCell = function (cell) {
 				return (cell.value && (!_elm_lang$core$Native_Utils.eq(cell.userChoice, _user$project$Types$Selected))) || ((!cell.value) && _elm_lang$core$Native_Utils.eq(cell.userChoice, _user$project$Types$Selected));
 			};
@@ -17683,51 +17729,8 @@
 			return model;
 		}
 	};
-	var _user$project$Picross$winningUpdateWrapper = F3(
-		function (updateFunc, msg, model) {
-			var _p11 = A2(updateFunc, msg, model);
-			var updateModel = _p11._0;
-			var cmd = _p11._1;
-			var newModel = _user$project$Picross$checkWinning(updateModel);
-			var oldWinning = _user$project$Picross$isWinning(model);
-			return (_user$project$Picross$isWinning(newModel) && (!oldWinning)) ? {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					newModel,
-					{
-						state: _user$project$Model$Won(
-							_user$project$Model$WonAnimFadeOut(
-								A2(
-									_mdgriffith$elm_style_animation$Animation$interrupt,
-									{
-										ctor: '::',
-										_0: A2(
-											_mdgriffith$elm_style_animation$Animation$toWith,
-											_mdgriffith$elm_style_animation$Animation$easing(
-												{
-													duration: 0.6 * _elm_lang$core$Time$second,
-													ease: function (x) {
-														return x;
-													}
-												}),
-											{
-												ctor: '::',
-												_0: _mdgriffith$elm_style_animation$Animation$opacity(0),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: _mdgriffith$elm_style_animation$Animation_Messenger$send(_user$project$Msg$EndOfFade),
-											_1: {ctor: '[]'}
-										}
-									},
-									_user$project$Picross$getFadeOutInitialStyle)))
-					}),
-				_1: cmd
-			} : {ctor: '_Tuple2', _0: newModel, _1: cmd};
-		});
-	var _user$project$Picross$getLevelByName = F2(
-		function (name, levels) {
+	var _user$project$Picross$getLevelByUuid = F2(
+		function (uuid, levels) {
 			return A2(
 				_elm_community$list_extra$List_Extra$find,
 				function (_p12) {
@@ -17736,9 +17739,9 @@
 							function (x, y) {
 								return _elm_lang$core$Native_Utils.eq(x, y);
 							}),
-						name,
+						uuid,
 						function (_) {
-							return _.name;
+							return _.uuid;
 						}(_p12));
 				},
 				levels);
@@ -17762,7 +17765,7 @@
 				});
 		});
 	var _user$project$Picross$choseLevel = F2(
-		function (levelName, model) {
+		function (levelUuid, model) {
 			var maybeModel = A2(
 				_elm_lang$core$Maybe$andThen,
 				function (model) {
@@ -17770,7 +17773,7 @@
 						_elm_lang$core$Native_Utils.update(
 							model,
 							{
-								currentLevel: _elm_lang$core$Maybe$Just(levelName),
+								currentLevel: _elm_lang$core$Maybe$Just(levelUuid),
 								state: _user$project$Model$Playing
 							}));
 				},
@@ -17787,7 +17790,7 @@
 						},
 						A2(
 							_elm_lang$core$Maybe$andThen,
-							_user$project$Picross$getLevelByName(levelName),
+							_user$project$Picross$getLevelByUuid(levelUuid),
 							model.levels))));
 			return A2(_elm_lang$core$Maybe$withDefault, model, maybeModel);
 		});
@@ -17826,7 +17829,7 @@
 						{x: _p20, y: _p21})
 				});
 			var _p19 = {ctor: '_Tuple2', _0: model.state, _1: model.mouseButtonDown};
-			_v8_2:
+			_v9_2:
 			do {
 				if (_p19.ctor === '_Tuple2') {
 					switch (_p19._0.ctor) {
@@ -17852,13 +17855,13 @@
 											A3(_user$project$LevelChooser$mouseMoveWithLeftButton, downPos, currentPos, _p19._0._0))
 									});
 							} else {
-								break _v8_2;
+								break _v9_2;
 							}
 						default:
-							break _v8_2;
+							break _v9_2;
 					}
 				} else {
-					break _v8_2;
+					break _v9_2;
 				}
 			} while(false);
 			return newModel;
@@ -18950,9 +18953,13 @@
 			'',
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'name',
+				'uuid',
 				_elm_lang$core$Json_Decode$string,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Level))));
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'name',
+					_elm_lang$core$Json_Decode$string,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Level)))));
 	var _user$project$Picross$decodeLevels = _elm_lang$core$Json_Decode$list(_user$project$Picross$decodeLevel);
 	var _user$project$Picross$getLevels = function () {
 		var url = 'levels/levels.json';
@@ -19013,11 +19020,12 @@
 									levels: _elm_lang$core$Maybe$Just(
 										_user$project$Picross$sortBySize(_p73)),
 									state: _user$project$Model$ChoosingLevel(
-										A3(
+										A4(
 											_user$project$LevelChooser$init,
 											_user$project$Picross$sortBySize(_p73),
 											800.0,
-											600.0))
+											600.0,
+											model.doneLevels))
 								}),
 							{ctor: '[]'});
 					} else {
@@ -19178,14 +19186,15 @@
 							model,
 							{
 								state: _user$project$Model$ChoosingLevel(
-									A3(
+									A4(
 										_user$project$LevelChooser$init,
 										A2(
 											_elm_lang$core$Maybe$withDefault,
 											{ctor: '[]'},
 											model.levels),
 										800.0,
-										600.0))
+										600.0,
+										model.doneLevels))
 							}),
 						{ctor: '[]'});
 				default:
@@ -19236,20 +19245,111 @@
 				}
 			});
 	};
-	var _user$project$Picross$main = _elm_lang$html$Html$program(
-		{
-			init: A2(
-				_elm_lang$core$Platform_Cmd_ops['!'],
-				_user$project$Model$init,
-				{
-					ctor: '::',
-					_0: _user$project$Picross$getLevels,
-					_1: {ctor: '[]'}
+	var _user$project$Picross$save = _elm_lang$core$Native_Platform.outgoingPort(
+		'save',
+		function (v) {
+			return [
+				_elm_lang$core$Native_List.toArray(v._0).map(
+				function (v) {
+					return v;
 				}),
+				v._1
+			];
+		});
+	var _user$project$Picross$winningUpdateWrapper = F3(
+		function (updateFunc, msg, model) {
+			var _p81 = A2(updateFunc, msg, model);
+			var updateModel = _p81._0;
+			var cmd = _p81._1;
+			var newModel = _user$project$Picross$checkWinning(updateModel);
+			var newDoneLevels = A2(
+				_user$project$Picross$storeLevelToDoneLevels,
+				A2(_elm_lang$core$Maybe$withDefault, '1', newModel.currentLevel),
+				model.doneLevels);
+			var oldWinning = _user$project$Picross$isWinning(model);
+			return (_user$project$Picross$isWinning(newModel) && (!oldWinning)) ? {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					newModel,
+					{
+						state: _user$project$Model$Won(
+							_user$project$Model$WonAnimFadeOut(
+								A2(
+									_mdgriffith$elm_style_animation$Animation$interrupt,
+									{
+										ctor: '::',
+										_0: A2(
+											_mdgriffith$elm_style_animation$Animation$toWith,
+											_mdgriffith$elm_style_animation$Animation$easing(
+												{
+													duration: 0.6 * _elm_lang$core$Time$second,
+													ease: function (x) {
+														return x;
+													}
+												}),
+											{
+												ctor: '::',
+												_0: _mdgriffith$elm_style_animation$Animation$opacity(0),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: _mdgriffith$elm_style_animation$Animation_Messenger$send(_user$project$Msg$EndOfFade),
+											_1: {ctor: '[]'}
+										}
+									},
+									_user$project$Picross$getFadeOutInitialStyle))),
+						doneLevels: newDoneLevels
+					}),
+				_1: _elm_lang$core$Platform_Cmd$batch(
+					{
+						ctor: '::',
+						_0: cmd,
+						_1: {
+							ctor: '::',
+							_0: _user$project$Picross$save(
+								{ctor: '_Tuple2', _0: newDoneLevels, _1: 4}),
+							_1: {ctor: '[]'}
+						}
+					})
+			} : {ctor: '_Tuple2', _0: newModel, _1: cmd};
+		});
+	var _user$project$Picross$main = _elm_lang$html$Html$programWithFlags(
+		{
+			init: function (_p82) {
+				var _p83 = _p82;
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_user$project$Model$init(_p83.doneLevels),
+					{
+						ctor: '::',
+						_0: _user$project$Picross$getLevels,
+						_1: {ctor: '[]'}
+					});
+			},
 			view: _user$project$Picross$view,
 			update: _user$project$Picross$winningUpdateWrapper(_user$project$Picross$update),
 			subscriptions: _user$project$Picross$subscriptions
-		})();
+		})(
+		A2(
+			_elm_lang$core$Json_Decode$andThen,
+			function (doneLevels) {
+				return A2(
+					_elm_lang$core$Json_Decode$andThen,
+					function (foo) {
+						return _elm_lang$core$Json_Decode$succeed(
+							{doneLevels: doneLevels, foo: foo});
+					},
+					A2(_elm_lang$core$Json_Decode$field, 'foo', _elm_lang$core$Json_Decode$int));
+			},
+			A2(
+				_elm_lang$core$Json_Decode$field,
+				'doneLevels',
+				_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string))));
+	var _user$project$Picross$Flags = F2(
+		function (a, b) {
+			return {doneLevels: a, foo: b};
+		});
 
 	var Elm = {};
 	Elm['Picross'] = Elm['Picross'] || {};
