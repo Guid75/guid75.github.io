@@ -50,7 +50,7 @@
 
 	var Elm = __webpack_require__(2);
 
-	var myapp = Elm.Dojo.embed(document.getElementById('main'));
+	var myapp = Elm.Main.embed(document.getElementById('main'));
 
 
 /***/ }),
@@ -8325,11 +8325,11 @@
 			return {stopPropagation: a, preventDefault: b};
 		});
 
-	var _user$project$Dojo$subscriptions = function (model) {
+	var _user$project$Main$subscriptions = function (model) {
 		return _elm_lang$core$Platform_Sub$batch(
 			{ctor: '[]'});
 	};
-	var _user$project$Dojo$update = F2(
+	var _user$project$Main$update = F2(
 		function (msg, model) {
 			var _p0 = msg;
 			switch (_p0.ctor) {
@@ -8363,7 +8363,7 @@
 						{ctor: '[]'});
 			}
 		});
-	var _user$project$Dojo$charToInt = function (c) {
+	var _user$project$Main$charToInt = function (c) {
 		var _p2 = _elm_lang$core$String$toInt(
 			_elm_lang$core$String$fromChar(c));
 		if (_p2.ctor === 'Err') {
@@ -8372,64 +8372,64 @@
 			return _p2._0;
 		}
 	};
-	var _user$project$Dojo$init = {
+	var _user$project$Main$init = {
 		ctor: '_Tuple2',
 		_0: {currentInput: '0123456789', size: 2},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
-	var _user$project$Dojo$Model = F2(
+	var _user$project$Main$Model = F2(
 		function (a, b) {
 			return {currentInput: a, size: b};
 		});
-	var _user$project$Dojo$Middle = {ctor: 'Middle'};
-	var _user$project$Dojo$Bottom = {ctor: 'Bottom'};
-	var _user$project$Dojo$RightBottom = {ctor: 'RightBottom'};
-	var _user$project$Dojo$RightTop = {ctor: 'RightTop'};
-	var _user$project$Dojo$LeftBottom = {ctor: 'LeftBottom'};
-	var _user$project$Dojo$renderBottomBody = F3(
+	var _user$project$Main$Middle = {ctor: 'Middle'};
+	var _user$project$Main$Bottom = {ctor: 'Bottom'};
+	var _user$project$Main$RightBottom = {ctor: 'RightBottom'};
+	var _user$project$Main$RightTop = {ctor: 'RightTop'};
+	var _user$project$Main$LeftBottom = {ctor: 'LeftBottom'};
+	var _user$project$Main$renderBottomBody = F3(
 		function (size, last, numDisp) {
-			var contentRight = A2(_elm_lang$core$List$member, _user$project$Dojo$RightBottom, numDisp) ? '|' : ' ';
-			var contentMiddle = (A2(_elm_lang$core$List$member, _user$project$Dojo$Bottom, numDisp) && last) ? A2(_elm_lang$core$String$repeat, size, '_') : A2(_elm_lang$core$String$repeat, size, ' ');
-			var contentLeft = A2(_elm_lang$core$List$member, _user$project$Dojo$LeftBottom, numDisp) ? '|' : ' ';
+			var contentRight = A2(_elm_lang$core$List$member, _user$project$Main$RightBottom, numDisp) ? '|' : ' ';
+			var contentMiddle = (A2(_elm_lang$core$List$member, _user$project$Main$Bottom, numDisp) && last) ? A2(_elm_lang$core$String$repeat, size, '_') : A2(_elm_lang$core$String$repeat, size, ' ');
+			var contentLeft = A2(_elm_lang$core$List$member, _user$project$Main$LeftBottom, numDisp) ? '|' : ' ';
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				contentLeft,
 				A2(_elm_lang$core$Basics_ops['++'], contentMiddle, contentRight));
 		});
-	var _user$project$Dojo$LeftTop = {ctor: 'LeftTop'};
-	var _user$project$Dojo$renderTopBody = F3(
+	var _user$project$Main$LeftTop = {ctor: 'LeftTop'};
+	var _user$project$Main$renderTopBody = F3(
 		function (size, last, numDisp) {
-			var contentRight = A2(_elm_lang$core$List$member, _user$project$Dojo$RightTop, numDisp) ? '|' : ' ';
-			var contentMiddle = (A2(_elm_lang$core$List$member, _user$project$Dojo$Middle, numDisp) && last) ? A2(_elm_lang$core$String$repeat, size, '_') : A2(_elm_lang$core$String$repeat, size, ' ');
-			var contentLeft = A2(_elm_lang$core$List$member, _user$project$Dojo$LeftTop, numDisp) ? '|' : ' ';
+			var contentRight = A2(_elm_lang$core$List$member, _user$project$Main$RightTop, numDisp) ? '|' : ' ';
+			var contentMiddle = (A2(_elm_lang$core$List$member, _user$project$Main$Middle, numDisp) && last) ? A2(_elm_lang$core$String$repeat, size, '_') : A2(_elm_lang$core$String$repeat, size, ' ');
+			var contentLeft = A2(_elm_lang$core$List$member, _user$project$Main$LeftTop, numDisp) ? '|' : ' ';
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				contentLeft,
 				A2(_elm_lang$core$Basics_ops['++'], contentMiddle, contentRight));
 		});
-	var _user$project$Dojo$Top = {ctor: 'Top'};
-	var _user$project$Dojo$numToDisplay = function (num) {
+	var _user$project$Main$Top = {ctor: 'Top'};
+	var _user$project$Main$numToDisplay = function (num) {
 		var _p3 = num;
 		switch (_p3) {
 			case 0:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$Top,
+					_0: _user$project$Main$Top,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$LeftTop,
+						_0: _user$project$Main$LeftTop,
 						_1: {
 							ctor: '::',
-							_0: _user$project$Dojo$LeftBottom,
+							_0: _user$project$Main$LeftBottom,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Dojo$Bottom,
+								_0: _user$project$Main$Bottom,
 								_1: {
 									ctor: '::',
-									_0: _user$project$Dojo$RightBottom,
+									_0: _user$project$Main$RightBottom,
 									_1: {
 										ctor: '::',
-										_0: _user$project$Dojo$RightTop,
+										_0: _user$project$Main$RightTop,
 										_1: {ctor: '[]'}
 									}
 								}
@@ -8440,29 +8440,29 @@
 			case 1:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$RightTop,
+					_0: _user$project$Main$RightTop,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$RightBottom,
+						_0: _user$project$Main$RightBottom,
 						_1: {ctor: '[]'}
 					}
 				};
 			case 2:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$Top,
+					_0: _user$project$Main$Top,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$RightTop,
+						_0: _user$project$Main$RightTop,
 						_1: {
 							ctor: '::',
-							_0: _user$project$Dojo$Middle,
+							_0: _user$project$Main$Middle,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Dojo$LeftBottom,
+								_0: _user$project$Main$LeftBottom,
 								_1: {
 									ctor: '::',
-									_0: _user$project$Dojo$Bottom,
+									_0: _user$project$Main$Bottom,
 									_1: {ctor: '[]'}
 								}
 							}
@@ -8472,19 +8472,19 @@
 			case 3:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$Top,
+					_0: _user$project$Main$Top,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$RightTop,
+						_0: _user$project$Main$RightTop,
 						_1: {
 							ctor: '::',
-							_0: _user$project$Dojo$Middle,
+							_0: _user$project$Main$Middle,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Dojo$RightBottom,
+								_0: _user$project$Main$RightBottom,
 								_1: {
 									ctor: '::',
-									_0: _user$project$Dojo$Bottom,
+									_0: _user$project$Main$Bottom,
 									_1: {ctor: '[]'}
 								}
 							}
@@ -8494,16 +8494,16 @@
 			case 4:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$LeftTop,
+					_0: _user$project$Main$LeftTop,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$Middle,
+						_0: _user$project$Main$Middle,
 						_1: {
 							ctor: '::',
-							_0: _user$project$Dojo$RightTop,
+							_0: _user$project$Main$RightTop,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Dojo$RightBottom,
+								_0: _user$project$Main$RightBottom,
 								_1: {ctor: '[]'}
 							}
 						}
@@ -8512,19 +8512,19 @@
 			case 5:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$Top,
+					_0: _user$project$Main$Top,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$LeftTop,
+						_0: _user$project$Main$LeftTop,
 						_1: {
 							ctor: '::',
-							_0: _user$project$Dojo$Middle,
+							_0: _user$project$Main$Middle,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Dojo$RightBottom,
+								_0: _user$project$Main$RightBottom,
 								_1: {
 									ctor: '::',
-									_0: _user$project$Dojo$Bottom,
+									_0: _user$project$Main$Bottom,
 									_1: {ctor: '[]'}
 								}
 							}
@@ -8534,22 +8534,22 @@
 			case 6:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$Top,
+					_0: _user$project$Main$Top,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$LeftTop,
+						_0: _user$project$Main$LeftTop,
 						_1: {
 							ctor: '::',
-							_0: _user$project$Dojo$Middle,
+							_0: _user$project$Main$Middle,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Dojo$LeftBottom,
+								_0: _user$project$Main$LeftBottom,
 								_1: {
 									ctor: '::',
-									_0: _user$project$Dojo$Bottom,
+									_0: _user$project$Main$Bottom,
 									_1: {
 										ctor: '::',
-										_0: _user$project$Dojo$RightBottom,
+										_0: _user$project$Main$RightBottom,
 										_1: {ctor: '[]'}
 									}
 								}
@@ -8560,13 +8560,13 @@
 			case 7:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$Top,
+					_0: _user$project$Main$Top,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$RightTop,
+						_0: _user$project$Main$RightTop,
 						_1: {
 							ctor: '::',
-							_0: _user$project$Dojo$RightBottom,
+							_0: _user$project$Main$RightBottom,
 							_1: {ctor: '[]'}
 						}
 					}
@@ -8574,25 +8574,25 @@
 			case 8:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$Top,
+					_0: _user$project$Main$Top,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$LeftTop,
+						_0: _user$project$Main$LeftTop,
 						_1: {
 							ctor: '::',
-							_0: _user$project$Dojo$RightTop,
+							_0: _user$project$Main$RightTop,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Dojo$Middle,
+								_0: _user$project$Main$Middle,
 								_1: {
 									ctor: '::',
-									_0: _user$project$Dojo$LeftBottom,
+									_0: _user$project$Main$LeftBottom,
 									_1: {
 										ctor: '::',
-										_0: _user$project$Dojo$RightBottom,
+										_0: _user$project$Main$RightBottom,
 										_1: {
 											ctor: '::',
-											_0: _user$project$Dojo$Bottom,
+											_0: _user$project$Main$Bottom,
 											_1: {ctor: '[]'}
 										}
 									}
@@ -8604,22 +8604,22 @@
 			case 9:
 				return {
 					ctor: '::',
-					_0: _user$project$Dojo$Top,
+					_0: _user$project$Main$Top,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Dojo$LeftTop,
+						_0: _user$project$Main$LeftTop,
 						_1: {
 							ctor: '::',
-							_0: _user$project$Dojo$RightTop,
+							_0: _user$project$Main$RightTop,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Dojo$Middle,
+								_0: _user$project$Main$Middle,
 								_1: {
 									ctor: '::',
-									_0: _user$project$Dojo$RightBottom,
+									_0: _user$project$Main$RightBottom,
 									_1: {
 										ctor: '::',
-										_0: _user$project$Dojo$Bottom,
+										_0: _user$project$Main$Bottom,
 										_1: {ctor: '[]'}
 									}
 								}
@@ -8631,11 +8631,11 @@
 				return {ctor: '[]'};
 		}
 	};
-	var _user$project$Dojo$renderPart = F4(
+	var _user$project$Main$renderPart = F4(
 		function (partRenderer, index, size, numbers) {
 			var renderPartNum = F2(
 				function (num, output) {
-					var numDisp = _user$project$Dojo$numToDisplay(num);
+					var numDisp = _user$project$Main$numToDisplay(num);
 					var content = A3(
 						partRenderer,
 						size,
@@ -8653,35 +8653,35 @@
 					_1: {ctor: '[]'}
 				});
 		});
-	var _user$project$Dojo$renderTopLine = F3(
+	var _user$project$Main$renderTopLine = F3(
 		function (size, _p4, numDisp) {
-			var padStr = A2(_elm_lang$core$List$member, _user$project$Dojo$Top, numDisp) ? '_' : ' ';
+			var padStr = A2(_elm_lang$core$List$member, _user$project$Main$Top, numDisp) ? '_' : ' ';
 			var padding = A2(_elm_lang$core$String$repeat, size, padStr);
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				' ',
 				A2(_elm_lang$core$Basics_ops['++'], padding, ' '));
 		});
-	var _user$project$Dojo$renderNumber = F2(
+	var _user$project$Main$renderNumber = F2(
 		function (size, str) {
 			var r = A2(_elm_lang$core$List$range, 1, size);
 			var nums = A2(
 				_elm_lang$core$List$map,
-				_user$project$Dojo$charToInt,
+				_user$project$Main$charToInt,
 				_elm_lang$core$String$toList(str));
 			var renderTopBodies = A2(
 				_elm_lang$core$List$map,
 				function (index) {
-					return A4(_user$project$Dojo$renderPart, _user$project$Dojo$renderTopBody, index, size, nums);
+					return A4(_user$project$Main$renderPart, _user$project$Main$renderTopBody, index, size, nums);
 				},
 				r);
 			var renderBottomBodies = A2(
 				_elm_lang$core$List$map,
 				function (index) {
-					return A4(_user$project$Dojo$renderPart, _user$project$Dojo$renderBottomBody, index, size, nums);
+					return A4(_user$project$Main$renderPart, _user$project$Main$renderBottomBody, index, size, nums);
 				},
 				r);
-			var numDisp = _user$project$Dojo$numToDisplay(0);
+			var numDisp = _user$project$Main$numToDisplay(0);
 			return A2(
 				_elm_lang$html$Html$pre,
 				{
@@ -8703,7 +8703,7 @@
 						ctor: '::',
 						_0: {
 							ctor: '::',
-							_0: A4(_user$project$Dojo$renderPart, _user$project$Dojo$renderTopLine, 0, size, nums),
+							_0: A4(_user$project$Main$renderPart, _user$project$Main$renderTopLine, 0, size, nums),
 							_1: {ctor: '[]'}
 						},
 						_1: {
@@ -8717,13 +8717,13 @@
 						}
 					}));
 		});
-	var _user$project$Dojo$ChangeSize = function (a) {
+	var _user$project$Main$ChangeSize = function (a) {
 		return {ctor: 'ChangeSize', _0: a};
 	};
-	var _user$project$Dojo$ChangeNum = function (a) {
+	var _user$project$Main$ChangeNum = function (a) {
 		return {ctor: 'ChangeNum', _0: a};
 	};
-	var _user$project$Dojo$renderHeader = function (model) {
+	var _user$project$Main$renderHeader = function (model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -8736,7 +8736,7 @@
 						_0: _elm_lang$html$Html_Attributes$value(model.currentInput),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Dojo$ChangeNum),
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeNum),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Attributes$type_('number'),
@@ -8755,7 +8755,7 @@
 								_elm_lang$core$Basics$toString(model.size)),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(_user$project$Dojo$ChangeSize),
+								_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeSize),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$type_('range'),
@@ -8776,28 +8776,28 @@
 				}
 			});
 	};
-	var _user$project$Dojo$view = function (model) {
+	var _user$project$Main$view = function (model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _user$project$Dojo$renderHeader(model),
+				_0: _user$project$Main$renderHeader(model),
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Dojo$renderNumber, model.size, model.currentInput),
+					_0: A2(_user$project$Main$renderNumber, model.size, model.currentInput),
 					_1: {ctor: '[]'}
 				}
 			});
 	};
-	var _user$project$Dojo$main = _elm_lang$html$Html$program(
-		{init: _user$project$Dojo$init, view: _user$project$Dojo$view, update: _user$project$Dojo$update, subscriptions: _user$project$Dojo$subscriptions})();
-	var _user$project$Dojo$NoOp = {ctor: 'NoOp'};
+	var _user$project$Main$main = _elm_lang$html$Html$program(
+		{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();
+	var _user$project$Main$NoOp = {ctor: 'NoOp'};
 
 	var Elm = {};
-	Elm['Dojo'] = Elm['Dojo'] || {};
-	if (typeof _user$project$Dojo$main !== 'undefined') {
-	    _user$project$Dojo$main(Elm['Dojo'], 'Dojo', undefined);
+	Elm['Main'] = Elm['Main'] || {};
+	if (typeof _user$project$Main$main !== 'undefined') {
+	    _user$project$Main$main(Elm['Main'], 'Main', undefined);
 	}
 
 
