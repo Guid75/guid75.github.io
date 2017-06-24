@@ -8363,6 +8363,7 @@
 						{ctor: '[]'});
 			}
 		});
+	var _user$project$Main$renderEmptyLine = _elm_lang$html$Html$text(' ');
 	var _user$project$Main$charToInt = function (c) {
 		var _p2 = _elm_lang$core$String$toInt(
 			_elm_lang$core$String$fromChar(c));
@@ -8374,7 +8375,7 @@
 	};
 	var _user$project$Main$init = {
 		ctor: '_Tuple2',
-		_0: {currentInput: '0123456789', size: 2},
+		_0: {currentInput: '1234567890', size: 1},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 	var _user$project$Main$Model = F2(
@@ -8693,7 +8694,15 @@
 							_1: {
 								ctor: '::',
 								_0: {ctor: '_Tuple2', _0: 'font-size', _1: '24px'},
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'black'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'color', _1: 'lightgreen'},
+										_1: {ctor: '[]'}
+									}
+								}
 							}
 						}),
 					_1: {ctor: '[]'}
@@ -8712,7 +8721,15 @@
 							_1: {
 								ctor: '::',
 								_0: renderBottomBodies,
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '::',
+										_0: _user$project$Main$renderEmptyLine,
+										_1: {ctor: '[]'}
+									},
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}));
