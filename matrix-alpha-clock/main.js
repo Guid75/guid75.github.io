@@ -5767,6 +5767,7 @@ var $author$project$Matrix$Il = {$: 'Il'};
 var $author$project$Matrix$Cinq = {$: 'Cinq'};
 var $author$project$Matrix$Deux = {$: 'Deux'};
 var $author$project$Matrix$Dix = {$: 'Dix'};
+var $author$project$Matrix$Heure = {$: 'Heure'};
 var $author$project$Matrix$Heures = {$: 'Heures'};
 var $author$project$Matrix$Huit = {$: 'Huit'};
 var $author$project$Matrix$Midi = {$: 'Midi'};
@@ -5778,7 +5779,6 @@ var $author$project$Matrix$Sept = {$: 'Sept'};
 var $author$project$Matrix$Six = {$: 'Six'};
 var $author$project$Matrix$Trois = {$: 'Trois'};
 var $author$project$Matrix$Une = {$: 'Une'};
-var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Matrix$computeHourWord = F2(
 	function (hour, words) {
 		var twelvedHour = A2($elm$core$Basics$modBy, 12, hour);
@@ -5812,10 +5812,13 @@ var $author$project$Matrix$computeHourWord = F2(
 					return $author$project$Matrix$Il;
 			}
 		}();
-		return ((!_Utils_eq(word, $author$project$Matrix$Midi)) && (!_Utils_eq(word, $author$project$Matrix$Minuit))) ? A2(
+		return (_Utils_eq(word, $author$project$Matrix$Midi) || _Utils_eq(word, $author$project$Matrix$Minuit)) ? A2($elm$core$List$cons, word, words) : ((twelvedHour === 1) ? A2(
 			$elm$core$List$cons,
 			word,
-			A2($elm$core$List$cons, $author$project$Matrix$Heures, words)) : A2($elm$core$List$cons, word, words);
+			A2($elm$core$List$cons, $author$project$Matrix$Heure, words)) : A2(
+			$elm$core$List$cons,
+			word,
+			A2($elm$core$List$cons, $author$project$Matrix$Heures, words)));
 	});
 var $author$project$Matrix$CinqMinutes = {$: 'CinqMinutes'};
 var $author$project$Matrix$DixMinutes = {$: 'DixMinutes'};
@@ -5885,6 +5888,8 @@ var $author$project$Matrix$wordPosition = function (word) {
 			return {first: 49, last: 53};
 		case 'Midi':
 			return {first: 56, last: 59};
+		case 'Heure':
+			return {first: 60, last: 64};
 		case 'Heures':
 			return {first: 60, last: 65};
 		case 'Minuit':
@@ -6213,6 +6218,7 @@ var $author$project$Main$displayManualValue = function (displayType) {
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
 var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
+var $elm$core$Basics$neq = _Utils_notEqual;
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
