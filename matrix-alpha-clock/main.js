@@ -4401,6 +4401,43 @@ function _Time_getZoneName()
 		callback(_Scheduler_succeed(name));
 	});
 }
+
+
+
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5208,7 +5245,12 @@ var $elm$time$Time$customZone = $elm$time$Time$Zone;
 var $elm$time$Time$here = _Time_here(_Utils_Tuple0);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{displayType: $author$project$Main$RealTime, time: $elm$core$Maybe$Nothing, zone: $elm$core$Maybe$Nothing},
+		{
+			displayType: $author$project$Main$RealTime,
+			manualHour: _Utils_Tuple2(10, 8),
+			time: $elm$core$Maybe$Nothing,
+			zone: $elm$core$Maybe$Nothing
+		},
 		A2($elm$core$Task$perform, $author$project$Main$AdjustTimeZone, $elm$time$Time$here));
 };
 var $author$project$Main$Tick = function (a) {
@@ -5621,11 +5663,37 @@ var $elm$time$Time$every = F2(
 var $author$project$Main$subscriptions = function (model) {
 	return A2($elm$time$Time$every, 1000, $author$project$Main$Tick);
 };
-var $author$project$Main$Manual = function (a) {
-	return {$: 'Manual', a: a};
-};
+var $author$project$Main$Manual = {$: 'Manual'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Main$splitHour = function (hourMinuteStr) {
+	var _v0 = A2($elm$core$String$split, ':', hourMinuteStr);
+	if ((_v0.b && _v0.b.b) && (!_v0.b.b.b)) {
+		var hourStr = _v0.a;
+		var _v1 = _v0.b;
+		var minuteStr = _v1.a;
+		var minute = A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			$elm$core$String$toInt(minuteStr));
+		var hour = A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			$elm$core$String$toInt(hourStr));
+		return _Utils_Tuple2(hour, minute);
+	} else {
+		return _Utils_Tuple2(0, 0);
+	}
+};
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -5657,9 +5725,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{
-							displayType: $author$project$Main$Manual('0')
-						}),
+						{displayType: $author$project$Main$Manual}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				var value = msg.a;
@@ -5667,7 +5733,8 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							displayType: $author$project$Main$Manual(value)
+							displayType: $author$project$Main$Manual,
+							manualHour: $author$project$Main$splitHour(value)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -5682,24 +5749,6 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
-var $author$project$Main$getHourAndMinute = function (minutesStr) {
-	var minutes = A2(
-		$elm$core$Maybe$withDefault,
-		0,
-		$elm$core$String$toInt(minutesStr));
-	var minute = minutes % 60;
-	var hour = (minutes / 60) | 0;
-	return _Utils_Tuple2(hour, minute);
-};
 var $elm$time$Time$flooredDiv = F2(
 	function (numerator, denominator) {
 		return $elm$core$Basics$floor(numerator / denominator);
@@ -6083,7 +6132,6 @@ var $author$project$Matrix$lettersMatrix = _List_fromArray(
 			_Utils_chr('B')
 		])
 	]);
-var $elm$core$Debug$log = _Debug_log;
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$html$Html$table = _VirtualDom_node('table');
@@ -6168,9 +6216,8 @@ var $author$project$Matrix$viewRow = F3(
 	});
 var $author$project$Matrix$viewMatrix = function (maybeHour) {
 	var activeWordsPositions = function () {
-		var _v0 = A2($elm$core$Debug$log, 'maybeHour', maybeHour);
-		if (_v0.$ === 'Just') {
-			var hour = _v0.a;
+		if (maybeHour.$ === 'Just') {
+			var hour = maybeHour.a;
 			return A2($author$project$Matrix$computeActiveWords, hour.hour, hour.minute);
 		} else {
 			return _List_Nil;
@@ -6198,22 +6245,43 @@ var $author$project$Main$ManualValueChanged = function (a) {
 	return {$: 'ManualValueChanged', a: a};
 };
 var $author$project$Main$RealTimeDisplayChecked = {$: 'RealTimeDisplayChecked'};
-var $author$project$Main$displayHourAndMinute = function (minutesStr) {
-	var _v0 = $author$project$Main$getHourAndMinute(minutesStr);
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
+var $elm$core$String$padLeft = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			A2(
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)),
+			string);
+	});
+var $author$project$Main$displayHourAndMinute = function (_v0) {
 	var hour = _v0.a;
 	var minute = _v0.b;
-	return $elm$core$String$fromInt(hour) + (':' + $elm$core$String$fromInt(minute));
-};
-var $author$project$Main$displayManualValue = function (displayType) {
-	return $elm$html$Html$text(
-		function () {
-			if (displayType.$ === 'RealTime') {
-				return 'N/A';
-			} else {
-				var str = displayType.a;
-				return $author$project$Main$displayHourAndMinute(str);
-			}
-		}());
+	var minuteStr = A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(minute));
+	var hourStr = A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(hour));
+	return hourStr + (':' + minuteStr);
 };
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
@@ -6303,26 +6371,20 @@ var $author$project$Main$radiobutton = F3(
 	});
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$viewOptions = function (model) {
-	var rangeValue = function () {
-		var _v0 = model.displayType;
-		if (_v0.$ === 'RealTime') {
-			return '0';
-		} else {
-			var str = _v0.a;
-			return str;
-		}
-	}();
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('slide')
+				$elm$html$Html$Attributes$class('options')
 			]),
 		_List_fromArray(
 			[
 				A2(
 				$elm$html$Html$div,
-				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('option')
+					]),
 				_List_fromArray(
 					[
 						A3(
@@ -6333,7 +6395,10 @@ var $author$project$Main$viewOptions = function (model) {
 					])),
 				A2(
 				$elm$html$Html$div,
-				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('option')
+					]),
 				_List_fromArray(
 					[
 						A3(
@@ -6344,28 +6409,25 @@ var $author$project$Main$viewOptions = function (model) {
 					])),
 				A2(
 				$elm$html$Html$div,
-				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('option')
+					]),
 				_List_fromArray(
 					[
 						A2(
 						$elm$html$Html$input,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$type_('range'),
-								A2($elm$html$Html$Attributes$style, 'width', '400px'),
-								$elm$html$Html$Attributes$min('0'),
-								$elm$html$Html$Attributes$max('1440'),
-								$elm$html$Html$Attributes$value(rangeValue),
+								$elm$html$Html$Attributes$type_('time'),
+								$elm$html$Html$Attributes$value(
+								$author$project$Main$displayHourAndMinute(model.manualHour)),
+								A2($elm$html$Html$Attributes$style, 'margin-left', '20px'),
+								$elm$html$Html$Attributes$min('09:00'),
+								$elm$html$Html$Attributes$max('18:00'),
 								$elm$html$Html$Events$onInput($author$project$Main$ManualValueChanged)
 							]),
 						_List_Nil)
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$author$project$Main$displayManualValue(model.displayType)
 					]))
 			]));
 };
@@ -6386,8 +6448,7 @@ var $author$project$Main$view = function (model) {
 				return $elm$core$Maybe$Nothing;
 			}
 		} else {
-			var value = _v0.a;
-			var _v2 = $author$project$Main$getHourAndMinute(value);
+			var _v2 = model.manualHour;
 			var hour = _v2.a;
 			var minute = _v2.b;
 			return $elm$core$Maybe$Just(
